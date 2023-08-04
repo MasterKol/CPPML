@@ -51,9 +51,9 @@
 // vDSP_vmmsb		(const float *__A, vDSP_Stride __IA, const float *__B, vDSP_Stride __IB, const float *__C, vDSP_Stride __IC, const float *__D, vDSP_Stride __ID, float *__E, vDSP_Stride __IE, vDSP_Length __N);
 
 // Has the accelerate framework (OSX only I think)
-#define ACCEL
+//#define ACCEL
 
-#if defined(ACCEL)//defined(__has_include) && __has_include(<Accelerate/Accelerate.h>)
+#if defined(__has_include) && __has_include(<Accelerate/Accelerate.h>)
 	#include <Accelerate/Accelerate.h>
 #else
 	// fills array out with value v

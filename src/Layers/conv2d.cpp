@@ -1,4 +1,3 @@
-// original
 #include "conv2d.hpp"
 #include "../activation.hpp"
 #include "../helper.hpp"
