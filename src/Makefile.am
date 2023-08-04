@@ -1,0 +1,2 @@
+bin_LIBRARIES = cppml
+cppml_SOURCES = LinearAlgebra.cpp activation.cpp cost_func.cpp data.cpp helper.cpp layer.cpp network.cpp Layers/conv2d.cpp Layers/cross_attention.cpp Layers/dense.cpp Layers/image_flatten.cpp Layers/input.cpp Layers/maxpooling2d.cpp Layers/self_attention.cpp Layers/upscale2d.cpp Optimizers/adam.cpp Optimizers/sgd.cpp
