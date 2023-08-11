@@ -1,5 +1,5 @@
 #include "image_flatten.hpp"
-#include "assert.h"
+#include <assert.h>
 
 #include "../LinearAlgebra.hpp"
 #include <cmath>
