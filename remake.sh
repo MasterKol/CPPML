@@ -2,15 +2,15 @@
 
 cd src
 
+INCLUDE="../include"
+
 SOURCES=`echo ./*.cpp ./*/*.cpp`
 OBJECTS=`for SOURCE in $SOURCES; do echo -n $\{BP}"/$(basename ${SOURCE%.*}.o) "; done`
-CFLAGS="-std=c++17 -Xclang -fopenmp -I/usr/local/opt/libomp/include -I../include"
+CFLAGS="-std=c++17 -Xclang -fopenmp -I/usr/local/opt/libomp/include -I${INCLUDE} -I${INCLUDE}/Layers -I${INCLUDE}/Optimizers"
 BP="../bin"
 CC="clang++"
 
 #`echo *.cpp */*.cpp`
-
-INCLUDE="../include"
 
 OUTFILE=Makefile
 
@@ -31,7 +31,7 @@ for SOURCE in $SOURCES
 do
 	BASEPATH=${SOURCE%/*}
 	HEADERS=`awk -F \" -v bp=$BASEPATH '/\#include \"/ {print "${INC}/"bp"/" $2}' $SOURCE ${INCLUDE}/${SOURCE%.*}.hpp`
-	echo \${BP}/$(basename ${SOURCE%.*}).o : $HEADERS >> ${OUTFILE}
+	echo \${BP}/$(basename ${SOURCE%.*}).o : $SOURCE $HEADERS >> ${OUTFILE}
 	echo -e '\t${CC} ${CFLAGS} -c $< -o $@\n' >> ${OUTFILE}
 done
 
