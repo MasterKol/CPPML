@@ -1,4 +1,4 @@
 .vscode
 bin
 src/Makefile
-.gitignore
+libcppml.a
