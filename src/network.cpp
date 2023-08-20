@@ -12,6 +12,8 @@
 
 //#include </usr/local/opt/libomp/include/omp.h>
 
+namespace CPPML {
+
 Network::Network(const Cost_func* const cost_func_, std::string name){
 	cost_func = cost_func_;
 	num_layers = 0;
@@ -469,4 +471,6 @@ void Network::print_summary(){
 	std::cout << "Total Params: " << num_params << std::endl;
 
 	std::cout << std::string(terminal_width, '-') << std::endl;
+}
+
 }

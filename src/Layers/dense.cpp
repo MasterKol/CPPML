@@ -6,6 +6,8 @@
 #include "../helper.hpp"
 #include "../LinearAlgebra.hpp"
 
+namespace CPPML {
+
 Dense::Dense(int nodes, const Activation* const activation_) : Layer() {
 	init(nodes, activation_);
 }
@@ -101,4 +103,6 @@ void Dense::get_change_grads(float* out_change, float* inpt_change, float* input
 		grad_row += input_shape.size;
 		prev_row++;
 	}
+}
+
 }

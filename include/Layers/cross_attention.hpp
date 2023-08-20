@@ -6,6 +6,8 @@
 #include "../layer.hpp"
 #include <initializer_list>
 
+namespace CPPML {
+
 /*
  * DON'T USE add_input FOR THIS LAYER, USE add_VK / add_Q
  * Performs multi-head cross attention on two different sets
@@ -87,5 +89,7 @@ private:
 	virtual void get_change_grads(float* out_change, float* inpt_change,
 				  float* input, float* output, float* intermediate);
 };
+
+}
 
 #endif

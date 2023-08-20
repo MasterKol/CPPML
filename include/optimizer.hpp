@@ -1,10 +1,14 @@
 #ifndef OPTIMIZER_H
 #define OPTIMIZER_H
 
+namespace CPPML {
 class Optimizer;
+}
 
 #include "network.hpp"
 #include <stdio.h>
+
+namespace CPPML {
 
 class Optimizer {
 public:
@@ -25,5 +29,7 @@ public:
 	// net will have already been set
 	virtual void compile_() = 0;
 };
+
+}
 
 #endif

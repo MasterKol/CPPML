@@ -1,6 +1,8 @@
 #ifndef ACTIVATION_H
 #define ACTIVATION_H
 
+namespace CPPML {
+
 struct Activation {
 	void (*f)(float* input, float* output, int num);
 	void (*df)(float* input, float* output, int num);
@@ -29,5 +31,7 @@ void sigmoid_df(float* input, float* output, int num);
 
 const Activation sigmoid_org = {sigmoid_f, sigmoid_df};
 const Activation* const SIGMOID = &sigmoid_org;
+
+}
 
 #endif

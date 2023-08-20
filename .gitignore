@@ -2,3 +2,4 @@
 bin
 src/Makefile
 libcppml.a
+src/helper.cpp

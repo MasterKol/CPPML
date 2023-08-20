@@ -4,6 +4,8 @@
 #include "../optimizer.hpp"
 #include "../network.hpp"
 
+namespace CPPML {
+
 class SGD : public Optimizer {
 public:
 	float learning_rate;
@@ -13,5 +15,7 @@ public:
 	virtual void update_params();
 	virtual void compile_();
 };
+
+}
 
 #endif

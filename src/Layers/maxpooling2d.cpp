@@ -3,6 +3,8 @@
 #include <cfloat>
 #include "../LinearAlgebra.hpp"
 
+namespace CPPML {
+
 void MaxPooling2d::init(int xScale_, int yScale_, int iw, int ih){
 	assert(xScale_ > 0 && yScale_ > 0);
 	xScale = xScale_;
@@ -147,4 +149,6 @@ void MaxPooling2d::get_change_grads(float* out_change, float* inpt_change, float
 		otlayer  += olsize;
 		selected += olsize;
 	}
+}
+
 }

@@ -3,6 +3,8 @@
 #include <string>
 #include <assert.h>
 
+namespace CPPML {
+
 Data::Data(){
 	shape = Shape(0, 0, 0, 0);
 	data = NULL;
@@ -68,4 +70,6 @@ void printd(float* data, Shape shape, std::string frmt){
 void printd(std::string txt, float* data, Shape shape, std::string frmt){
 	printf("%s\n", txt.c_str());
 	printd(data, shape, frmt);
+}
+
 }

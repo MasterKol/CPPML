@@ -3,6 +3,8 @@
 
 #include "../layer.hpp"
 
+namespace CPPML {
+
 /*
  * 
  * DON'T USE add_input FOR THIS LAYER, USE add_QV / add_K
@@ -84,5 +86,7 @@ private:
 	// buff must be of size Iw * max(in_sz, Ih)
 	inline void QVK_Derv(float* Pw, float* dPw, float* dP, float* inputT, float* dIn, float* buff, bool dP_transposed=false);
 };
+
+}
 
 #endif

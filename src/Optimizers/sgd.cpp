@@ -1,6 +1,8 @@
 #include "sgd.hpp"
 #include "../LinearAlgebra.hpp"
 
+namespace CPPML {
+
 SGD::SGD(float learning_rate_){
 	learning_rate = learning_rate_;
 }
@@ -17,4 +19,6 @@ void SGD::update_params(){
 
 	// params += grads
 	vDSP_vsub(grads, 1, params, 1, params, 1, num_params);
+}
+
 }

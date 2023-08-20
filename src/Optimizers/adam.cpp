@@ -6,6 +6,8 @@
 
 #include "../data.hpp"
 
+namespace CPPML {
+
 Adam::Adam(float learning_rate_, float beta1_, float beta2_, float epsilon_){
 	beta1 = beta1_;
 	beta2 = beta2_;
@@ -87,4 +89,6 @@ void Adam::update_params(){
 
 	// params += grads
 	vDSP_vadd(grads, 1, params, 1, params, 1, num_params);
+}
+
 }

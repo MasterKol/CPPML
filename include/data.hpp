@@ -3,6 +3,8 @@
 
 #include <string>
 
+namespace CPPML {
+
 class Shape{
 public:
 	int w, h, d, n;
@@ -54,5 +56,7 @@ public:
 
 void printd(float* data, Shape shape, std::string frmt="% .3f");
 void printd(std::string txt, float* data, Shape shape, std::string frmt="% .3f");
+
+}
 
 #endif

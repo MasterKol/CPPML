@@ -5,6 +5,8 @@
 #include <cmath>
 #include <string.h>
 
+namespace CPPML {
+
 void vDSP_vfill(const float* v, float* out, int OutStride, int N){
 	for(int i = 0; i < N; i++){
 		*out = *v;
@@ -252,7 +254,7 @@ void vDSP_mmul(const float* A, int Astride, const float* B, int Bstride, float* 
 	}
 }
 
-void mmul_transpose(const int M, const int N, const float alpha, const float* A, const int Astride, const float* B, const int Bstride, float* out){
+/*void mmul_transpose(const int M, const int N, const float alpha, const float* A, const int Astride, const float* B, const int Bstride, float* out){
 	const float* Bstart = B;
 	for(int ro = 0; ro < M; ro++){ // loop over output rows
 		for(int co = 0; co < N; co++){ // loop over output columns
@@ -263,7 +265,7 @@ void mmul_transpose(const int M, const int N, const float alpha, const float* A,
 		A += Astride;
 		B = Bstart;
 	}
-}
+}*/
 
 void vDSP_vsma(const float *A, const int Astride, const float *B, const float *C, const int Cstride, float *out, int OutStride, const int N){
 	for(int i = 0; i < N; i++){
@@ -342,6 +344,8 @@ void vDSP_vmmsb(const float *A, int AStride, const float *B, int BStride, const 
 		D += DStride;
 		E += EStride;
 	}
+}
+
 }
 
 #endif

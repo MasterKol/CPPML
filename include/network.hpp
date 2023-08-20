@@ -1,7 +1,9 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
-class Network;
+namespace CPPML {
+	class Network;
+}
 
 #include "optimizer.hpp"
 #include "cost_func.hpp"
@@ -13,6 +15,8 @@ class Network;
 #include <vector>
 #include <atomic>
 #include <string>
+
+namespace CPPML {
 
 class Network {
 public:
@@ -91,9 +95,6 @@ public:
 
 	// reads model weights from designated file
 	void load(std::string file_name);
-
-	/*void save(std::string file_name);
-	void load(std::string file_name);*/
 private:
 	// This runs basically dfs topological sort on the nodes
 	// in the network so that each one will only rely on
@@ -103,30 +104,6 @@ private:
 	void fit_network_thread(std::atomic_int* i, float** examples, float** targets);
 };
 
-/*
-class network {
-	Shape input_shape;
-	shape output_shape;
-
-	cost_function cost;
-
-	layer* first_layer;
-	layer* last_layer;
-
-	float* intermediate; // used for storing intermediate values, guaranteed  to fit output from any layer
-	float* gradients;
-	data temp_out;
-	
-	optimizer* opt;
-
-	int num_layers;
-	int num_params;
-
-	int batch_size; // stores the number of examples network has been trained on for the current batch
-
-	int intermediate_length;
-	
-	float last_cost, running_cost;
-};*/
+}
 
 #endif

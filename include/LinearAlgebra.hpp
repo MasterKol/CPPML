@@ -56,6 +56,7 @@
 #if defined(__has_include) && __has_include(<Accelerate/Accelerate.h>)
 	#include <Accelerate/Accelerate.h>
 #else
+	namespace CPPML {
 	// fills array out with value v
 	void vDSP_vfill(const float* v, float* out, int OutStride, int N);
 	// writes negative abs of vector in to out
@@ -128,6 +129,8 @@
 	void vDSP_vma(const float *A, int AStride, const float *B, int BStride, const float *C, int CStride, float *D, int DStride, int N);
 	// Subtracts the product of two single-precision vectors from a second product of two single-precision vectors.
 	void vDSP_vmmsb(const float *A, int AStride, const float *B, int BStride, const float *C, int CStride, const float *D, int DStride, float *E, int EStride, int N);
+
+	}
 #endif
 
 

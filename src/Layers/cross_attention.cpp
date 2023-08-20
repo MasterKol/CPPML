@@ -4,6 +4,8 @@
 #include "../helper.hpp"
 #include <cmath>
 
+namespace CPPML {
+
 void CrossAttention::init(int num_heads_, int qk_embed_size_, int v_embed_size_, int output_width, int Qwidth, int VKwidth, std::initializer_list<Layer*> Qs, std::initializer_list<Layer*> VKs){
 	num_heads = num_heads_;
 	qk_embed_size = qk_embed_size_;
@@ -423,4 +425,6 @@ void CrossAttention::get_change_grads(float* out_change, float* input_change,
 	delete[] z_grd_t;
 	delete[] QinT;
 	delete[] VKinT;
+}
+
 }

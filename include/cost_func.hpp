@@ -1,6 +1,8 @@
 #ifndef COST_HEADER
 #define COST_HEADER
 
+namespace CPPML {
+
 typedef struct t_cost {
 	float (*get_cost)(float* x, float* y, int length); // returns the cost between x and y
 	void (*get_cost_derv)(float* x, float* y, float* out, int length); // places the cost derivative of x and y in out
@@ -26,5 +28,7 @@ void huber_get_cost_derv(float* x, float* y, float* out, int length);
 
 const Cost_func HUBER_org = (Cost_func){.get_cost=huber_get_cost, .get_cost_derv=huber_get_cost_derv};
 const Cost_func* const HUBER = &HUBER_org;
+
+}
 
 #endif

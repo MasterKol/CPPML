@@ -4,6 +4,8 @@
 #include "../optimizer.hpp"
 #include "../network.hpp"
 
+namespace CPPML {
+
 class Adam : public Optimizer {
 public:
 	float beta1, beta2;
@@ -18,5 +20,7 @@ public:
 	virtual void update_params();
 	virtual void compile_();
 };
+
+}
 
 #endif

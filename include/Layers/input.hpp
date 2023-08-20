@@ -1,10 +1,14 @@
 #ifndef INPUT_LAYER_H
 #define INPUT_LAYER_H
 
+namespace CPPML {
 class Input;
+}
 
 #include "../layer.hpp"
 #include "../network.hpp"
+
+namespace CPPML {
 
 /*
  * Special layer type used exclusively for input into a network.
@@ -43,5 +47,7 @@ private:
 	virtual void get_change_grads(float* out_change, float* inpt_change,
 				  float* input, float* output, float* intermediate);
 };
+
+}
 
 #endif

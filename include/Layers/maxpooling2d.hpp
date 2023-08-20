@@ -3,6 +3,8 @@
 
 #include "../layer.hpp"
 
+namespace CPPML {
+
 /*
  * Takes in a set of 2d matrices and scales it down by the given
  * factor. Captures the max of each region in the input.
@@ -64,5 +66,7 @@ private:
 	inline void process_out_line(float* inlayer, float* otlayer,
 							int* selected, int& oi, int& ii, int xhang, int maxY);
 };
+
+}
 
 #endif

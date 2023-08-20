@@ -5,6 +5,8 @@
 
 #include "../activation.hpp"
 
+namespace CPPML {
+
 /*
  * Takes in 1d array of data and returns 1d array of given length. 
  * Runs data through given activation function before moving on.
@@ -51,5 +53,7 @@ private:
 	virtual void get_change_grads(float* out_change, float* inpt_change,
 				  float* input, float* output, float* intermediate);
 };
+
+}
 
 #endif

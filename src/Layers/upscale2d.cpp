@@ -4,6 +4,8 @@
 // right/bottom padding = xyPadding / 2
 // pos in region = (xyScale - 1) / 2
 
+namespace CPPML {
+
 void Upscale2d::init(int xScale_, int yScale_, int xPadding_, int yPadding_, int iw, int ih){
 	assert(xScale_ > 0 && yScale_ > 0);
 	xScale = xScale_;
@@ -121,4 +123,6 @@ void Upscale2d::get_change_grads(float* out_change, float* inpt_change, float* i
 		// skip to next layer
 		out_cur += yPadding * output_shape.w;
 	}
+}
+
 }

@@ -5,6 +5,8 @@
 #include <cmath>
 #include <algorithm>
 
+namespace CPPML {
+
 void create_emb_list(float* const emb_start, const int dim, const int num_embs, const int outWidth);
 void to_image(float* mat, float* img, Shape mat_shape, Shape img_shape, int xPatchSize, int yPatchSize, int xPatches, int yPatches);
 void to_matrix(float* mat, float* img, Shape mat_shape, Shape img_shape, int xPatchSize, int yPatchSize, int xPatches, int yPatches);
@@ -287,4 +289,6 @@ void to_matrix(float* mat, float* img, Shape mat_shape, Shape img_shape, int xPa
 	// process last column separately in case of 'overhang'
 	memset(mat, 0, patch_size * sizeof(float));
 	vDSP_mmov(img, mat, x_hang, y_hang, img_shape.w, xPatchSize);
+}
+
 }

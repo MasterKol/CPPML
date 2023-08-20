@@ -3,6 +3,8 @@
 
 #include "../layer.hpp"
 
+namespace CPPML {
+
 /*
  * Scales a 2d layer up by the factor given. Fills empty space with zeros.
  * Additionally padding can be added, this adds a TOTAL of the given padding
@@ -60,5 +62,7 @@ private:
 	virtual void get_change_grads(float* out_change, float* inpt_change,
 				  float* input, float* output, float* intermediate);
 };
+
+}
 
 #endif

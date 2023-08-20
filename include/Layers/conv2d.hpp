@@ -4,6 +4,8 @@
 #include "../activation.hpp"
 #include "../layer.hpp"
 
+namespace CPPML {
+
 /* 
  * Passes a given number of 3d kernels over the input and 
  * outputs the result after passing through an activation function
@@ -68,5 +70,7 @@ private:
 
 	void add_grads(float* input, float* out_change);
 };
+
+}
 
 #endif

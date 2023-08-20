@@ -7,6 +7,8 @@
 #include <assert.h>
 #include <string>
 
+namespace CPPML {
+
 /*
  * Layer interface, all layers in a network extend this.
  * Layer* can be used for all types of layers.
@@ -112,5 +114,7 @@ private:
 	virtual void get_change_grads(float* out_change, float* inpt_change,
 				  float* input, float* output, float* intermediate) = 0;
 };
+
+}
 
 #endif

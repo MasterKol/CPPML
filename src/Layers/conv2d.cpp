@@ -5,6 +5,8 @@
 #include "../LinearAlgebra.hpp"
 #include <assert.h>
 
+namespace CPPML {
+
 void Conv2d::init(int kw_, int kh_, int d_,
 				  const Activation* const activation_,
 				  int padding_, int iw, int ih){
@@ -319,4 +321,6 @@ float* Conv2d::flatten_img(float* input, Shape in_shp, Shape out_shp, float* dst
 	}
 
 	return img_mat;
+}
+
 }

@@ -3,6 +3,8 @@
 #include "LinearAlgebra.hpp"
 #include <cmath>
 
+namespace CPPML {
+
 /**************** Mean Squared Error ****************/
 float mse_get_cost(float* x, float* y, int length){
 	// calculate sum((x - y)^2) / x.length
@@ -62,4 +64,6 @@ void huber_get_cost_derv(float* x, float* y, float* out, int length){
 
 	float rlength = 1.0f / length;
 	vDSP_vsmul(out, 1, &rlength, out, 1, length); // multiply out by 1/length
+}
+
 }

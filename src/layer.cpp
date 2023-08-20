@@ -3,6 +3,8 @@
 #include <exception>
 #include "LinearAlgebra.hpp"
 
+namespace CPPML {
+
 void Layer::add_input(Layer* layer){
 	assert(layer != NULL);
 	//inputs.push_back(layer->get_output());
@@ -113,4 +115,6 @@ void Layer::backpropagate(float* change_buffer, float* io_buffer, float* interme
 	if(inputs.size() > 1){
 		delete[] input;
 	}
+}
+
 }

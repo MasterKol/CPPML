@@ -3,6 +3,8 @@
 
 #include "../layer.hpp"
 
+namespace CPPML {
+
 /* 
  * Flattens a 2d image into a form that that can be passed
  * into an attention layer (adds position embeddings)
@@ -104,5 +106,7 @@ private:
 	virtual void get_change_grads(float* out_change, float* inpt_change,
 				  float* input, float* output, float* intermediate);
 };
+
+}
 
 #endif

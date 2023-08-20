@@ -6,6 +6,8 @@
 #include <random>
 #include "LinearAlgebra.hpp"
 
+namespace CPPML {
+
 /* copied from this stack overflow:
  * https://stackoverflow.com/questions/23369503/get-size-of-terminal-window-rows-columns
  */
@@ -85,4 +87,6 @@ void fillGaussian(float* a, int N, float mean, float sdv){
 
 void rand_seed(int seed){
 	rng = std::mt19937(seed);
+}
+
 }

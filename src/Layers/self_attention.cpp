@@ -5,6 +5,8 @@
 #include "../LinearAlgebra.hpp"
 #include <assert.h>
 
+namespace CPPML {
+
 bool SelfAttention::compile_(){
 	bool set_width = true;
 
@@ -362,4 +364,6 @@ void SelfAttention::get_change_grads(float* out_change, float* input_change,
 	delete[] k_grd_t;
 	delete[] z_grd_t;
 	delete[] inT;
+}
+
 }

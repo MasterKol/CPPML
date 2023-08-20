@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <cmath>
 
+namespace CPPML {
+
 long micro();
 float randF(float min, float max);
 
@@ -20,5 +22,7 @@ void rand_seed(int seed);
 int get_terminal_width();
 
 void get_sin_pos_embed(int v, float* emb, int d, float n=10000);
+
+}
 
 #endif

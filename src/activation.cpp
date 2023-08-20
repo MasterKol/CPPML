@@ -4,6 +4,8 @@
 #include <math.h>
 #include "LinearAlgebra.hpp"
 
+namespace CPPML {
+
 /**************** LINEAR ****************/
 void linear_f(float* input, float* output, int length){
 	if(input != output){
@@ -66,4 +68,6 @@ void sigmoid_df(float* input, float* output, int length){ // computes (1 / (1 + 
 
 	vDSP_vmsb(output, 1, output, 1, output, 1, output, 1, length); // out <- out * out + out
 	vDSP_vneg(output, 1, output, 1, length); // out <- -out
+}
+
 }
