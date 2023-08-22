@@ -5,6 +5,10 @@
 
 namespace CPPML {
 
+/*
+ * Defines the shape of a vector of data
+ * w changes first, then h, then d, then n
+ */
 class Shape{
 public:
 	int w, h, d, n;
@@ -18,44 +22,32 @@ public:
 		size = w * h * d * n;
 	}
 
+	// add two shapes together along largest non-one axis
+	// throws an error if lower axes don't match
 	friend Shape operator + (Shape lhs, Shape rhs);
-	int& operator [] (int ind){
-		return ((int*)this)[ind];
-	}
 
-	void fix_size(){
-		size = w * h * d * n;
-	}
+	// allows array like accessing of info
+	// 0 = w, 1 = h, 2 = d, 3 = n
+	int& operator [] (int ind);
 
-	void print(){
-		printf("Shape: [%d, %d, %d, %d]\n", w, h, d, n);
-	}
+	// if any sizes are changed then fix_size must
+	void fix_size();
 
-	std::string to_string(){
-		std::string out = "(";
-		for(int i = 0; i < 3; i++){
-			out += std::to_string((*this)[i]) + ", ";
-		}
-		out += std::to_string(n) + ")";
-		return out;
-	}
+	// prints shape to stdout
+	void print();
+
+	// returns Shape as string in the format
+	// (w, h, d, n)
+	std::string to_string();
+
+	// prints the given data formatted for this shape
+	// optionally accepts format specifier for changing output
+	void printd(float* data, std::string frmt="% .3f");
+
+	// prints the given data formatted for this shape
+	// optionally accepts format specifier for changing output
+	void printd(std::string txt, float* data, std::string frmt="% .3f");
 };
-
-class Data {
-public:
-	float* data;
-	Shape shape;
-
-	Data(float*, Shape);
-	Data(Shape);
-	Data();
-
-	void print(std::string frmt="%.6d");
-	float& operator [] (int);
-};
-
-void printd(float* data, Shape shape, std::string frmt="% .3f");
-void printd(std::string txt, float* data, Shape shape, std::string frmt="% .3f");
 
 }
 

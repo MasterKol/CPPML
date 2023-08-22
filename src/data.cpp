@@ -1,32 +1,9 @@
 #include "data.hpp"
-#include <stdio.h>
+#include <iostream>
 #include <string>
 #include <assert.h>
 
 namespace CPPML {
-
-Data::Data(){
-	shape = Shape(0, 0, 0, 0);
-	data = NULL;
-}
-
-Data::Data(Shape shape_){
-	shape = shape_;
-	data = new float[shape.size];
-}
-
-Data::Data(float* data_, Shape shape_){
-	data = data_;
-	shape = shape_;
-}
-
-void Data::print(std::string frmt){
-	printd(data, shape, frmt);
-}
-
-float& Data::operator [] (int index){
-	return data[index];
-}
 
 Shape operator + (Shape lhs, Shape rhs){
 	Shape out = lhs;
@@ -50,26 +27,66 @@ Shape operator + (Shape lhs, Shape rhs){
 	return out;
 }
 
-void printd(float* data, Shape shape, std::string frmt){
-	for(int d = 0; d < shape.d; d++){
-		if(d != 0){
-			printf("-------------------------------\n");
-		}
-		for(int h = 0; h < shape.h; h++){
-			for(int w = 0; w < shape.w; w++){
-				if(w != 0){
-					printf(", ");
-				}
-				printf(frmt.c_str(), data[(d * shape.h + h) * shape.w + w]);
-			}
-			printf("\n");
-		}
-	}
+int& Shape::operator [] (int ind){
+	return ((int*)this)[ind];
 }
 
-void printd(std::string txt, float* data, Shape shape, std::string frmt){
-	printf("%s\n", txt.c_str());
-	printd(data, shape, frmt);
+void Shape::fix_size(){
+	size = w * h * d * n;
+}
+
+void Shape::print(){
+	std::cout << to_string() << std::endl;
+}
+
+std::string Shape::to_string(){
+	std::string out = "(";
+	for(int i = 0; i < 3; i++){
+		out += std::to_string((*this)[i]) + ", ";
+	}
+	out += std::to_string(n) + ")";
+	return out;
+}
+
+template<typename... args>
+std::string format(std::string format_string, args... args1){
+	// get size of final string
+	int buff_size = snprintf(nullptr, 0, format_string.c_str(), args1...);
+
+	// make string of output size
+	std::string out;
+	out.resize(buff_size);
+	
+	// write string to given size
+	snprintf(&out[0], buff_size, format_string.c_str(), args1...);
+
+	// remove null terminator
+	if(out.size() != 0)
+		out.pop_back();
+
+	return out;
+}
+
+void Shape::printd(float* data, std::string frmt){
+	for(int di = 0; di < d; di++){
+		if(di != 0){
+			std::cout << "-------------------------------\n";
+		}
+		for(int hi = 0; hi < h; hi++){
+			for(int wi = 0; wi < w; wi++){
+				if(wi != 0)
+					std::cout << ", ";
+				std::cout << format(frmt, data[(di * h + hi) * w + wi]);
+			}
+			std::cout << "\n";
+		}
+	}
+	std::cout << std::flush;
+}
+
+void Shape::printd(std::string txt, float* data, std::string frmt){
+	std::cout << txt << std::endl;
+	printd(data, frmt);
 }
 
 }
