@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <cmath>
-#include "../helper.hpp"
+#include "../random.hpp"
 #include "../LinearAlgebra.hpp"
 
 namespace CPPML {
@@ -46,7 +46,7 @@ void Dense::populate(float* params, float* gradients){
 	// not sure but the internet said to do it so thats what I did....
 	float r = sqrt(6.0f / (input_shape.size + output_shape.size));
 	for(int i = 0; i < num_weights; i++){
-		weights[i] = randF(-r, r);
+		weights[i] = Random::randF(-r, r);
 	}
 	
 	// biases are already zeroed and should stay that way

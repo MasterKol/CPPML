@@ -1,5 +1,5 @@
 #include "self_attention.hpp"
-#include "../helper.hpp"
+#include "../random.hpp"
 
 #include <cmath>
 #include "../LinearAlgebra.hpp"
@@ -53,14 +53,14 @@ void SelfAttention::populate(float* params, float* gradients){
 	const float qvk_range = sqrtf(6.0f / (input_shape.w + internal_size));
 	//const float qvk_sdv = sqrtf(0.5f / (input_shape.w));
 	for(int i = 0; i < mat_size * 3; i++){
-		params[i] = randF(-qvk_range, qvk_range);
+		params[i] = Random::randF(-qvk_range, qvk_range);
 	}
 
 	// this num is chosen to keep variance at 1
 	const float z_range = sqrt(6.0f / (internal_size * num_heads + output_shape.w));
 	//const float z_sdv = sqrtf(0.5f / (num_heads * internal_size));
 	for(int i = 0; i < internal_size * num_heads * output_shape.w; i++){
-		z_mat[i] = randF(-z_range, z_range);
+		z_mat[i] = Random::randF(-z_range, z_range);
 	}
 }
 

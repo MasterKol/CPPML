@@ -1,9 +1,10 @@
 #include "conv2d.hpp"
 #include "../activation.hpp"
-#include "../helper.hpp"
+#include "../random.hpp"
 
 #include "../LinearAlgebra.hpp"
 #include <assert.h>
+#include <cmath>
 
 namespace CPPML {
 
@@ -73,7 +74,7 @@ void Conv2d::populate(float* params, float* gradients){
 	// initialize the filters in a conv2d layer
 	const float sdv = sqrtf(2.0f / filter_size);
 	for(int i = 0; i < filter_size * output_shape.d; i++){
-		filters[i] = randomGaussian(0, sdv);
+		filters[i] = Random::randomGaussian(0, sdv);
 	}
 }
 

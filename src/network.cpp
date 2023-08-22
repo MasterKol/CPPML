@@ -1,7 +1,7 @@
 #include "network.hpp"
 
 #include "LinearAlgebra.hpp"
-#include "helper.hpp"
+#include "random.hpp"
 #include <assert.h>
 #include <thread>
 #include <iostream>
@@ -402,6 +402,33 @@ void print_centered(std::string s, int width){
 	int l_size = extra / 2;
 	std::cout << std::string(l_size, ' ') << s << std::string(extra - l_size, ' ');
 }
+
+/* copied from this stack overflow:
+ * https://stackoverflow.com/questions/23369503/get-size-of-terminal-window-rows-columns
+ */
+#if defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
+#define VC_EXTRALEAN
+#include <Windows.h>
+#elif defined(__linux__) || __APPLE__
+#include <sys/ioctl.h>
+#endif // Windows/Linux/Mac
+
+/*
+ * returns the width of the current terminal window
+*/
+int get_terminal_width(){
+	#if defined(_WIN32)
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+		return (int)(csbi.srWindow.Right-csbi.srWindow.Left+1);
+	#elif defined(__linux__) || __APPLE__
+		struct winsize w;
+		ioctl(fileno(stdout), TIOCGWINSZ, &w);
+		return (int)(w.ws_col);
+	#endif // Windows/Linux/Mac
+}
+/*end copied section*/
 
 void Network::print_summary(){
 	fflush(stdout);

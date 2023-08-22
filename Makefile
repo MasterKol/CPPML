@@ -3,7 +3,7 @@ BP=bin
 NORMAL = \
 network.o \
 layer.o \
-helper.o \
+random.o \
 data.o \
 cost_func.o \
 activation.o \

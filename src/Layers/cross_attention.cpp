@@ -1,7 +1,7 @@
 #include "cross_attention.hpp"
 
 #include "../LinearAlgebra.hpp"
-#include "../helper.hpp"
+#include "../random.hpp"
 #include <cmath>
 
 namespace CPPML {
@@ -85,7 +85,7 @@ bool CrossAttention::compile_(){
 void populate_mat(float** params, float** gradients, int w, int h, int d){
 	float r = sqrtf(6.0f / (w + h));
 	int len = w * h * d;
-	fillRand(*params, len, -r, r);
+	Random::fillRand(*params, len, -r, r);
 
 	*params += len;
 	*gradients += len;
