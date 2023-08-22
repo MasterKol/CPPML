@@ -48,9 +48,10 @@ public:
 		init(num_heads, qk_embed_size, v_embed_size, output_width, Qwidth, VKwidth, Qs, VKs);
 	}
 
-	// add a new layer 
+	// add VK input
 	void add_VK(Layer* l);
 
+	// add Q input
 	void add_Q(Layer* l);
 
 	// gets pointer to parameter memory from

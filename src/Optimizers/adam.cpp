@@ -30,8 +30,6 @@ void Adam::update_params(){
 	float* __restrict params = net->params;
 	const int num_params = net->num_params;
 
-	//printd(grads, Shape(num_params));
-
 	// initial update
 	t++;
 	beta1_hat *= beta1;

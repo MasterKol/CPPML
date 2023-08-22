@@ -8,8 +8,8 @@ namespace CPPML {
 
 /* 
  * Passes a given number of 3d kernels over the input and 
- * outputs the result after passing through an activation function
- * 
+ * outputs the result after passing through an activation function.
+ * Takes in and puts out 2d or 3d vectors
  */
 class Conv2d : public Layer {
 public:
@@ -68,6 +68,7 @@ private:
 	// filter_size in the shape of the filter
 	float* flatten_img(float* input, Shape in_shp, Shape out_shp, float* dst=NULL);
 
+	// handles calculating and adding the gradients for the current example
 	void add_grads(float* input, float* out_change);
 };
 

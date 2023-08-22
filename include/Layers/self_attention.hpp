@@ -6,8 +6,8 @@
 namespace CPPML {
 
 /*
- * 
- * DON'T USE add_input FOR THIS LAYER, USE add_QV / add_K
+ * Implements the self attention mechanism
+ * Output dims match input dims
  */
 class SelfAttention : public Layer {
 public:

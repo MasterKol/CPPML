@@ -101,6 +101,7 @@ private:
 	// nodes that will have previously been processed
 	void order_layers();
 
+	// fits network in a separate thread
 	void fit_network_thread(std::atomic_int* i, float** examples, float** targets);
 };
 

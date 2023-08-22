@@ -6,6 +6,9 @@
 
 namespace CPPML {
 
+/*
+ * Implements standard stochastic gradient descent
+ */
 class SGD : public Optimizer {
 public:
 	float learning_rate;

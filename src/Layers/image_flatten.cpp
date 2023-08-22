@@ -89,6 +89,8 @@ void ImageFlatten::compute(float* input, float* output, float* intermediate_buff
 	}
 }
 
+// creates sinusoidal position embedding of given dimension
+// writing sines and cosines to given arrays
 void fill_emb_start(float* sins, float* coss, int dim){
 	const float W = powf(1000.0f, -2.0f / (float)dim);
 
@@ -100,6 +102,9 @@ void fill_emb_start(float* sins, float* coss, int dim){
 	}
 }
 
+// more efficient version of fill_emb_start
+// fills the first 'dim' columns of an 'num_embs' x 'outWidth' matrix
+// with sin. pos. embedding where embedding matches the row
 void create_emb_list(float* const emb_start, const int dim, const int num_embs, const int outWidth){
 	const int half_dim = dim / 2;
 
@@ -204,8 +209,8 @@ void ImageDeFlatten::get_change_grads(float* out_change, float* inpt_change,
 	}
 }
 
-// takes in an image that has been flattened to a matrix and
-// reforms it back into an image
+// takes in an image that has been flattened to a
+// matrix and reforms it back into an image
 void to_image(float* mat, float* img, Shape mat_shape, Shape img_shape, int xPatchSize, int yPatchSize, int xPatches, int yPatches){
 	// amount that x and y overhang by
 	const int x_hang = ((img_shape.w - 1) % xPatchSize) + 1;
@@ -241,8 +246,7 @@ void to_image(float* mat, float* img, Shape mat_shape, Shape img_shape, int xPat
 	vDSP_mmov(mat, img, x_hang, y_hang, xPatchSize, img_shape.w);
 }
 
-// takes in an image and flattens it into a matrix of the
-// given shape
+// takes in an image and flattens it into a matrix of the given shape
 void to_matrix(float* mat, float* img, Shape mat_shape, Shape img_shape, int xPatchSize, int yPatchSize, int xPatches, int yPatches){
 	// amount that x and y overhang by
 	const int x_hang = ((img_shape.w - 1) % xPatchSize) + 1;
