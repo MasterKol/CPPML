@@ -1,7 +1,7 @@
 #ifndef LAYER_H
 #define LAYER_H
 
-#include "data.hpp"
+#include "shape.hpp"
 #include <vector>
 #include <mutex>
 #include <assert.h>

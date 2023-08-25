@@ -4,7 +4,7 @@ NORMAL = \
 network.o \
 layer.o \
 random.o \
-data.o \
+shape.o \
 cost_func.o \
 activation.o \
 dense.o \

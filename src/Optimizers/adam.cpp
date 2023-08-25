@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "../data.hpp"
+#include "../shape.hpp"
 
 namespace CPPML {
 

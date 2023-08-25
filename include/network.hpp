@@ -9,7 +9,7 @@ namespace CPPML {
 #include "cost_func.hpp"
 #include "optimizer.hpp"
 #include "layer.hpp"
-#include "data.hpp"
+#include "shape.hpp"
 #include "Layers/input.hpp"
 #include <string>
 #include <vector>

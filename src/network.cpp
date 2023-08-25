@@ -50,7 +50,7 @@ void Network::compile(Optimizer* optimizer_){
 	input_length = 0;
 	for(Layer* inLayer : input_layers){
 		assert(inLayer->inputs.size() == 0);
-		input_length += inLayer->output_shape.size;
+		input_length += inLayer->output_shape.size();
 	}
 
 	// loop over all layers and compile them, then
@@ -61,7 +61,7 @@ void Network::compile(Optimizer* optimizer_){
 	for(Layer* layer : layers){
 		layer->compile(last_io_size, intermediate_size);
 
-		last_io_size += layer->output_shape.size;
+		last_io_size += layer->output_shape.size();
 		num_params += layer->num_params;
 		intermediate_size += layer->intermediate_num;
 	}
@@ -92,7 +92,7 @@ void Network::compile(Optimizer* optimizer_){
 	optimizer->compile(this);
 
 	// set output_shape
-	output_length = output_layer->output_shape.size;
+	output_length = output_layer->output_shape.size();
 }
 
 void Network::order_layers(){

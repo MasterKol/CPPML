@@ -28,22 +28,22 @@ public:
 	SelfAttention(int num_heads_, int internal_size_, int output_width, int input_width, Ts... input_layers) : Layer(input_layers...){
 		num_heads = num_heads_;
 		internal_size = internal_size_;
-		output_shape.w = output_width;
-		input_shape.w = input_width;
+		output_shape.w(output_width);
+		input_shape.w(input_width);
 	}
 
 	template<typename... Ts>
 	SelfAttention(int num_heads_, int internal_size_, int output_width, Ts... input_layers) : Layer(input_layers...){
 		num_heads = num_heads_;
 		internal_size = internal_size_;
-		output_shape.w = output_width;
+		output_shape.w(output_width);
 	}
 
 	template<typename... Ts>
 	SelfAttention(int num_heads_, int internal_size_, Ts... input_layers) : Layer(input_layers...){
 		num_heads = num_heads_;
 		internal_size = internal_size_;
-		output_shape.w = -1;
+		output_shape.w(-1);
 	}
 
 	// gets pointer to parameter memory from

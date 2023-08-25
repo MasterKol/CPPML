@@ -1,10 +1,19 @@
-#include "data.hpp"
+#include "shape.hpp"
 #include <iostream>
 #include <string>
 #include <assert.h>
 
 namespace CPPML {
 
+Shape::Shape(int _w_, int _h_, int _d_, int _n_){
+	w_ = _w_;
+	h_ = _h_;
+	d_ = _d_;
+	n_ = _n_;
+	size_ = w_ * h_ * d_ * n_;
+}
+
+/*
 Shape operator + (Shape lhs, Shape rhs){
 	Shape out = lhs;
 
@@ -16,6 +25,7 @@ Shape operator + (Shape lhs, Shape rhs){
 			break;
 		}
 	}
+	//if(lhs.w != )
 
 	for(; i < 4; i++){
 		// dimensions do not match
@@ -26,13 +36,13 @@ Shape operator + (Shape lhs, Shape rhs){
 
 	return out;
 }
-
-int& Shape::operator [] (int ind){
+*/
+int Shape::operator [] (int ind){
 	return ((int*)this)[ind];
 }
 
 void Shape::fix_size(){
-	size = w * h * d * n;
+	size_ = w_ * h_ * d_ * n_;
 }
 
 void Shape::print(){
@@ -44,7 +54,7 @@ std::string Shape::to_string(){
 	for(int i = 0; i < 3; i++){
 		out += std::to_string((*this)[i]) + ", ";
 	}
-	out += std::to_string(n) + ")";
+	out += std::to_string(n_) + ")";
 	return out;
 }
 
@@ -68,15 +78,15 @@ std::string format(std::string format_string, args... args1){
 }
 
 void Shape::printd(float* data, std::string frmt){
-	for(int di = 0; di < d; di++){
+	for(int di = 0; di < d_; di++){
 		if(di != 0){
 			std::cout << "-------------------------------\n";
 		}
-		for(int hi = 0; hi < h; hi++){
-			for(int wi = 0; wi < w; wi++){
+		for(int hi = 0; hi < h_; hi++){
+			for(int wi = 0; wi < w_; wi++){
 				if(wi != 0)
 					std::cout << ", ";
-				std::cout << format(frmt, data[(di * h + hi) * w + wi]);
+				std::cout << format(frmt, data[(di * h_ + hi) * w_ + wi]);
 			}
 			std::cout << "\n";
 		}
@@ -89,4 +99,30 @@ void Shape::printd(std::string txt, float* data, std::string frmt){
 	printd(data, frmt);
 }
 
+int Shape::size(){
+	if(size_ == -1)
+		size_ = w_ * h_ * d_ * n_;
+	return size_;
 }
+
+void Shape::w(int new_w){
+	w_ = new_w;
+	size_ = -1;
+}
+
+void Shape::h(int new_h){
+	h_ = new_h;
+	size_ = -1;
+}
+
+void Shape::d(int new_d){
+	d_ = new_d;
+	size_ = -1;
+}
+
+void Shape::n(int new_n){
+	n_ = new_n;
+	size_ = -1;
+}
+
+} // namespace CPPML

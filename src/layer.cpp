@@ -1,5 +1,5 @@
 #include "layer.hpp"
-#include "data.hpp"
+#include "shape.hpp"
 #include <exception>
 #include "LinearAlgebra.hpp"
 
@@ -33,8 +33,8 @@ void Layer::compile(int buffer_index, int inter_index){
 void Layer::collect_inputs(float* io_buffer, float* input){
 	for(Layer* l : inputs){ // copy data from each layer
 		// FIXME, add option for choosing only part of input
-		memcpy(input, io_buffer + l->output_index, l->output_shape.size * sizeof(float));
-		input += l->output_shape.size;
+		memcpy(input, io_buffer + l->output_index, l->output_shape.size() * sizeof(float));
+		input += l->output_shape.size();
 	}
 }
 
@@ -60,7 +60,7 @@ void Layer::process(float* io_buffer, float* intermediate_buffer){
 	}
 
 	// multiple inputs to copy to a temp buffer
-	input = new float[input_shape.size];
+	input = new float[input_shape.size()];
 	
 	collect_inputs(io_buffer, input);
 
@@ -71,7 +71,7 @@ void Layer::process(float* io_buffer, float* intermediate_buffer){
 
 void Layer::backpropagate(float* change_buffer, float* io_buffer, float* intermediate_buffer){
 	// nowhere to push back to, simply return
-	if(input_shape.size <= 0){
+	if(input_shape.size() <= 0){
 		return;
 	}
 	float* out_change = change_buffer + output_index;
@@ -90,12 +90,12 @@ void Layer::backpropagate(float* change_buffer, float* io_buffer, float* interme
 			break;
 		default:
 			// multiple inputs, collect them into input array
-			input = new float[input_shape.size];
+			input = new float[input_shape.size()];
 			collect_inputs(io_buffer, input);
 	}
 
-	float* inpt_change = new float[input_shape.size];
-	memset(inpt_change, 0, input_shape.size * sizeof(float)); // zero inpt_change
+	float* inpt_change = new float[input_shape.size()];
+	memset(inpt_change, 0, input_shape.size() * sizeof(float)); // zero inpt_change
 
 	// run layer specific get_change and add_gradients
 	get_change_grads(out_change, inpt_change, input, output, intermediate);
@@ -105,8 +105,8 @@ void Layer::backpropagate(float* change_buffer, float* io_buffer, float* interme
 	for(Layer* l : inputs){
 		float* write_pos = change_buffer + l->output_index; // pos to write to
 		// add this layer's changes to the changes already present
-		vDSP_vadd(inpt_change + offset, 1, write_pos, 1, write_pos, 1, l->output_shape.size);
-		offset += l->output_shape.size;
+		vDSP_vadd(inpt_change + offset, 1, write_pos, 1, write_pos, 1, l->output_shape.size());
+		offset += l->output_shape.size();
 	}
 
 	delete[] inpt_change;
