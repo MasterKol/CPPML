@@ -1,0 +1,6 @@
+Mac required libs: Xcode, command line tools, Openmp
+Windows: Openmp
+
+Mac:
+Linker flags: -L/usr/local/opt/libomp/lib -lomp ${CPPML_PATH}/libcppml.a -framework Accelerate
+Compiler flags: -I${CPPML_PATH}/include -std=c++17 
