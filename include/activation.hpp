@@ -32,6 +32,12 @@ void sigmoid_df(float* input, float* output, int num);
 const Activation sigmoid_org = {sigmoid_f, sigmoid_df};
 const Activation* const SIGMOID = &sigmoid_org;
 
+void softmax_f(float* input, float* output, int num);
+void softmax_df(float* input, float* output, int num);
+
+const Activation softmax_org = {softmax_f, softmax_df};
+const Activation* const SOFTMAX = &softmax_org;
+
 }
 
 #endif

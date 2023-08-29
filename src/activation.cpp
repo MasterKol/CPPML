@@ -70,4 +70,41 @@ void sigmoid_df(float* input, float* output, int length){ // computes (1 / (1 + 
 	vDSP_vneg(output, 1, output, 1, length); // out <- -out
 }
 
+/**************** SOFTMAX ****************/
+void softmax_f(float* input, float* output, int length){
+	// this slightly odd implementation of softmax gives more
+	// numerical stability than direct application of the formula
+
+	float max;
+	// find the maximum value in v
+	vDSP_maxv(input, 1, &max, length);
+
+	// subtract max off of v
+	max = -max;
+	vDSP_vsadd(input, 1, &max, output, 1, length);
+
+	// exp v
+	vvexpf(output, output, &length);
+
+	// sum v
+	float total;
+	vDSP_sve(output, 1, &total, length);
+
+	// divide v by total
+	vDSP_vsdiv(output, 1, &total, output, 1, length);
+}
+
+void softmax_df(float* input, float* output, int length){
+	float dt;
+	// dt = dS . S
+	vDSP_dotpr(output, 1, input, 1, &dt, length);
+	
+	// dS -= dt
+	dt = -dt;
+	vDSP_vsadd(output, 1, &dt, output, 1, length);
+	
+	// dQKT = S .* dS (write to S)
+	vDSP_vmul(input, 1, output, 1, output, 1, length);
+}
+
 }

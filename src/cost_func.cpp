@@ -66,4 +66,19 @@ void huber_get_cost_derv(float* x, float* y, float* out, int length){
 	vDSP_vsmul(out, 1, &rlength, out, 1, length); // multiply out by 1/length
 }
 
+/**************** Cross Entropy ****************/
+float cross_entropy_get_cost(float* x, float* y, int length){
+	float out = 0;
+	for(int i = 0; i < length; i++){
+		if(y[i] == 0)
+			continue;
+		out -= y[i] * log(x[i]);
+	}
+	return out;
+}
+
+void cross_entropy_get_cost_derv(float* x, float* y, float* out, int length){
+	vDSP_vsub(y, 1, x, 1, out, 1, length);
+}
+
 }
