@@ -1,8 +1,8 @@
 #include "network.hpp"
 
-#include <stdlib.h>
-#include <unistd.h>
+#include <stdio.h>
 
+#include <cstdlib>
 #include <cassert>
 #include <thread>
 #include <iostream>
@@ -11,6 +11,18 @@
 
 #include "LinearAlgebra.hpp"
 #include "random.hpp"
+
+#if defined(__has_include) && __has_include(<unistd.h>)
+#include <unistd.h>
+int myisatty(int fd){
+	return isatty(fd);
+}
+#else
+#include <io.h> // for windows
+int myisatty(int fd){
+	return _isatty(fd);
+}
+#endif
 
 //#include </usr/local/opt/libomp/include/omp.h>
 
@@ -435,11 +447,10 @@ int get_terminal_width(){
 /*end copied section*/
 
 void Network::print_summary(){
-	fflush(stdout);
-
-	// this format is mostly just copied from tensorflow...
+	// The output format is lifted from tensorflow for
+	// similarities sake
 	int terminal_width = 200;
-	if(isatty(1)) // check if stdout is a terminal or not
+	if(myisatty( fileno(stdout) )) // check if stdout is a terminal or not
 		terminal_width = get_terminal_width();
 
 	std::cout << "Model: " << net_name << std::endl;
