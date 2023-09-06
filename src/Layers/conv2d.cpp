@@ -81,7 +81,7 @@ void Conv2d::populate(float* params, float* gradients){
 float* Conv2d::pad_img(float* input, float* dest){
 	// create buffer for storing padded image
 	float* padded = dest;
-	if(dest == NULL){
+	if(dest == nullptr){
 		padded = new float[pw * ph * input_shape.d()];
 	}
 
@@ -132,13 +132,13 @@ void Conv2d::compute(float* input, float* output, float* intermediate_buffer){
 	if(padding != 0){ // free padded img if necessary
 		delete[] padded;
 	}
-	padded = NULL;
+	padded = nullptr;
 
 	// place to write value of convolution before activation
 	// fuction. if there is no intermediate buffer just write
 	// to output as intermediate
 	float* inter_s = intermediate_buffer;
-	if(inter_s == NULL){
+	if(inter_s == nullptr){
 		inter_s = output;
 	}
 
@@ -302,7 +302,7 @@ float* Conv2d::flatten_img(float* input, Shape in_shp, Shape out_shp, float* dst
 	// carried out as a simple matrix multiplication
 	const int block_size = kw * kh * in_shp.d();
 	float* img_mat = dst;
-	if(dst == NULL){
+	if(dst == nullptr){
 		img_mat = new float[block_size * out_shp.w() * out_shp.h()];
 	}
 

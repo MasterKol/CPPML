@@ -62,11 +62,11 @@ private:
 				  float* input, float* output, float* intermediate);
 
 	// pads and image to the amount specified by this object
-	float* pad_img(float* input, float* dest = NULL);
+	float* pad_img(float* input, float* dest=nullptr);
 
 	// takes in an image and flattens into rows of size
 	// filter_size in the shape of the filter
-	float* flatten_img(float* input, Shape in_shp, Shape out_shp, float* dst=NULL);
+	float* flatten_img(float* input, Shape in_shp, Shape out_shp, float* dst=nullptr);
 
 	// handles calculating and adding the gradients for the current example
 	void add_grads(float* input, float* out_change);

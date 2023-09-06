@@ -71,11 +71,11 @@ public:
 	// size of patches in the x and y directions
 	int xPatchSize, yPatchSize;
 
-	ImageDeFlatten(int xPatchSize, int yPatchSize, int imgw, int imgh, Layer* l=NULL);
+	ImageDeFlatten(int xPatchSize, int yPatchSize, int imgw, int imgh, Layer* l=nullptr);
 	
 	// gets necessary inputs from provided flatten layer, also
 	// optionally takes in an input layer
-	ImageDeFlatten(ImageFlatten* flatten_layer, Layer* l=NULL);
+	ImageDeFlatten(ImageFlatten* flatten_layer, Layer* l=nullptr);
 
 	// gets pointer to parameter memory from
 	// network and fills it with initial params

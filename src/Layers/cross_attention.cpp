@@ -328,7 +328,7 @@ void CrossAttention::get_change_grads(float* out_change, float* input_change,
 
 	for(int i = 0; i < num_heads; i++){
 		attention_head(Qin, VKin, q_mat_h, k_mat_h, v_mat_h, z_mat_h, Q,
-						K, buff, V, QKT_sm, Z, NULL, norm_factor, false);
+						K, buff, V, QKT_sm, Z, nullptr, norm_factor, false);
 
 		// buff <- Z^T
 		vDSP_mtrans(Z, 1, buff, 1, v_embed_size, Q_shape.h());

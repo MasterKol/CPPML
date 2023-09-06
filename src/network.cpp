@@ -33,12 +33,12 @@ Network::Network(const Cost_func* const cost_func_, std::string name){
 	num_layers = 0;
 	last_io_size = 0;
 	num_params = 0;
-	output_layer = NULL;
+	output_layer = nullptr;
 	output_length = 0;
 	input_length = 0;
 
-	gradients = NULL;
-	params = NULL;
+	gradients = nullptr;
+	params = nullptr;
 	num_examples = 0;
 	net_name = name;
 }
@@ -167,7 +167,7 @@ void Network::order_layers(){
 void Network::eval(float* input, float* output, float* lio_){
 	// create memory for storing network io
 	float* lio = lio_;
-	if(lio_ == NULL){
+	if(lio_ == nullptr){
 		lio = new float[last_io_size];
 	}
 
@@ -182,7 +182,7 @@ void Network::eval(float* input, float* output, float* lio_){
 	// copy output from lio to
 	memcpy(output, lio + output_layer->output_index, output_length * sizeof(float));
 
-	if(lio_ == NULL){
+	if(lio_ == nullptr){
 		delete[] lio;
 	}
 }
@@ -196,17 +196,17 @@ void Network::fit_network_thread(std::atomic_int* i, float** examples, float** t
 }
 
 void Network::fit_network(float* examples, float* targets, int num, float* loss){
-	if(loss != NULL){
+	if(loss != nullptr){
 		*loss = 0;
 	}
 	// loop over all provided examples
 	#pragma omp parallel for
 	for(int i = 0; i < num; i++){
-		if(loss == NULL){
+		if(loss == nullptr){
 			fit_network(examples + i * input_length, targets + i * output_length);
 		}else{
 			float t;
-			fit_network(examples + i * input_length, targets + i * output_length, NULL, NULL, NULL, &t);
+			fit_network(examples + i * input_length, targets + i * output_length, nullptr, nullptr, nullptr, &t);
 			*loss += t;
 		}
 	}
@@ -215,12 +215,12 @@ void Network::fit_network(float* examples, float* targets, int num, float* loss)
 void Network::fit_network(float* example, float* target, float* lio_, float* inter_, float* change_, float* loss){
 	// create memory for storing network io
 	float* lio = lio_;
-	if(lio_ == NULL){
+	if(lio_ == nullptr){
 		lio = new float[last_io_size];
 	}
 	// create memory for intermediate vals
 	float* inter = inter_;
-	if(inter_ == NULL){
+	if(inter_ == nullptr){
 		inter = new float[intermediate_size];
 	}
 	memset(inter, 0, intermediate_size * sizeof(float));
@@ -237,7 +237,7 @@ void Network::fit_network(float* example, float* target, float* lio_, float* int
 
 	// create mem to store change for back prop
 	float* change = change_;
-	if(change_ == NULL){
+	if(change_ == nullptr){
 		change = new float[last_io_size];
 	}
 	memset(change, 0, last_io_size * sizeof(float)); // zero change
@@ -247,7 +247,7 @@ void Network::fit_network(float* example, float* target, float* lio_, float* int
 	const int oi = output_layer->output_index;
 	cost_func->get_cost_derv(lio + oi, target, change + oi, output_length);
 
-	if(loss != NULL){
+	if(loss != nullptr){
 		*loss = cost_func->get_cost(lio + oi, target, output_length);
 	}
 
@@ -258,11 +258,11 @@ void Network::fit_network(float* example, float* target, float* lio_, float* int
 	}
 
 	// free memory if it was created locally
-	if (lio_ == NULL)
+	if (lio_ == nullptr)
 		delete[] lio;
-	if (inter_ == NULL)
+	if (inter_ == nullptr)
 		delete[] inter;
-	if (change_ == NULL)
+	if (change_ == nullptr)
 		delete[] change;
 
 	num_examples++;

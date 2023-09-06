@@ -71,7 +71,7 @@ public:
 	// one pointer is required for each input layer and
 	// should be provided in the same order as input layers
 	// were added to this network.
-	void eval(float* input, float* output, float* lio=NULL);
+	void eval(float* input, float* output, float* lio=nullptr);
 
 	// examples: array of examples with length = num * input  size
 	// targets : array of targets  with length = num * output size
@@ -82,11 +82,11 @@ public:
 	
 	// calls fit_network with pointers to the start of
 	// examples and targets as if they were float**s
-	void fit_network(float* examples, float* targets, int num, float* loss=NULL);
+	void fit_network(float* examples, float* targets, int num, float* loss=nullptr);
 
 	// Takes in a network input and a desired output and adds the
 	// gradients for that example to the network. Thread safe
-	void fit_network(float* example, float* target, float* lio=NULL, float* inter=NULL, float* change=NULL, float* loss=NULL);
+	void fit_network(float* example, float* target, float* lio=nullptr, float* inter=nullptr, float* change=nullptr, float* loss=nullptr);
 
 	// applies gradients from previous training.
 	// zeroes gradients and resets num_examples when done

@@ -170,7 +170,7 @@ void ImageDeFlatten::init(int xPatchSize_, int yPatchSize_, int imgw, int imgh, 
 
 	input_shape = Shape(xPatchSize * yPatchSize, xPatches * yPatches);
 
-	if(l != NULL){
+	if(l != nullptr){
 		add_input(l);
 	}
 

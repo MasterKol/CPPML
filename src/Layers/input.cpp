@@ -7,7 +7,7 @@ namespace CPPML {
 Input::Input(Shape input_shape_, Network* net){
 	output_shape = input_shape_;
 
-	if(net != NULL){
+	if(net != nullptr){
 		net->add_input_layer(this);
 	}
 }

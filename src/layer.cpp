@@ -8,7 +8,7 @@
 namespace CPPML {
 
 void Layer::add_input(Layer* layer){
-	assert(layer != NULL);
+	assert(layer != nullptr);
 	//inputs.push_back(layer->get_output());
 	inputs.push_back(layer);
 	
@@ -43,10 +43,10 @@ void Layer::collect_inputs(float* io_buffer, float* input){
 
 void Layer::process(float* io_buffer, float* intermediate_buffer){
 	float* output = io_buffer + output_index;
-	float* intermediate = NULL;
-	float* input = NULL;
+	float* intermediate = nullptr;
+	float* input = nullptr;
 
-	if(intermediate_buffer != NULL){
+	if(intermediate_buffer != nullptr){
 		intermediate = intermediate_buffer + intermediate_index;
 	}
 
@@ -78,7 +78,7 @@ void Layer::backpropagate(float* change_buffer, float* io_buffer, float* interme
 		return;
 	}
 	float* out_change = change_buffer + output_index;
-	float* input = NULL;
+	float* input = nullptr;
 	float* output = io_buffer + output_index;
 	float* intermediate = intermediate_buffer + intermediate_index;
 

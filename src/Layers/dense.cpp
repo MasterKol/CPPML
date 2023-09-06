@@ -53,7 +53,7 @@ void Dense::populate(float* params, float* gradients){
 }
 
 void Dense::compute(float* input, float* output, float* inter_ptr){
-	if(inter_ptr == NULL){
+	if(inter_ptr == nullptr){
 		inter_ptr = output;
 	}
 

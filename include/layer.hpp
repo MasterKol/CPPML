@@ -69,7 +69,7 @@ public:
 	// for this layer to read and write from. If there are
 	// multiple inputs it collects them together into
 	// temporary memory
-	void process(float* io_buffer, float* intermediate_buffer=NULL);
+	void process(float* io_buffer, float* intermediate_buffer=nullptr);
 
 	// calls compile_ for each layer which sets up the layer
 	// given its inputs, this redirect just does boilerplate

@@ -16,7 +16,7 @@ class Input : public Layer {
 public:
 	// creates a new network input and adds it
 	// to the given network if one is provided
-	Input(Shape input_shape, Network* net=NULL);
+	Input(Shape input_shape, Network* net=nullptr);
 
 	// gets pointer to parameter memory from
 	// network and fills it with initial params
