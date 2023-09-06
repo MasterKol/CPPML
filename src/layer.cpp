@@ -1,6 +1,6 @@
 #include "layer.hpp"
 #include "shape.hpp"
-#include <exception>
+#include <iostream>
 #include "LinearAlgebra.hpp"
 
 namespace CPPML {
@@ -26,7 +26,8 @@ void Layer::compile(int buffer_index, int inter_index){
 
 	if(!is_input && inputs.size() == 0){
 		// Layer has no inputs and is not an Input Layer
-		throw std::bad_typeid();
+		std::cerr << "Layer has no inputs and is not an input Layer";
+		exit(-1);
 	}
 }
 

@@ -4,6 +4,7 @@
 #include <cmath>
 #include "../LinearAlgebra.hpp"
 #include <assert.h>
+#include <iostream>
 
 namespace CPPML {
 
@@ -18,7 +19,8 @@ bool SelfAttention::compile_(){
 
 	for(Layer* l : inputs){
 		if((!set_width && input_shape.w() != l->output_shape.w()) || (set_width && l->output_shape.size() % input_shape.w() != 0)){
-			throw std::runtime_error("Input widths don't match");
+			std::cerr << "Input dimensions to not match in self attention\n";
+			exit(-1);
 		}
 		input_shape.h(input_shape.h() + l->output_shape.size() / input_shape.w());
 	}

@@ -1,14 +1,16 @@
 #include "network.hpp"
 
-#include "LinearAlgebra.hpp"
-#include "random.hpp"
-#include <assert.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#include <cassert>
 #include <thread>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <stdlib.h>
-#include <unistd.h>
+
+#include "LinearAlgebra.hpp"
+#include "random.hpp"
 
 //#include </usr/local/opt/libomp/include/omp.h>
 
@@ -274,11 +276,11 @@ void Network::apply_gradients(){
 	memset(gradients, 0, num_params * sizeof(float));
 }
 
-void Network::save(std::string file_name){
+Network::Err Network::save(std::string file_name){
 	// open file as output, binary, and delete original content
 	std::ofstream file (file_name, std::ios::out|std::ios::binary|std::ios::trunc);
 	if (!file.is_open())
-		throw std::runtime_error("Could not open file");
+		return file_not_found;
 
 	uint t = htonl(num_params);
 	// write number of parameters
@@ -295,13 +297,14 @@ void Network::save(std::string file_name){
 	}
 
 	file.close();
+	return success;
 }
 
-void Network::load(std::string file_name){
+Network::Err Network::load(std::string file_name){
 	// open file as output, binary, and delete original content
 	std::ifstream file (file_name, std::ios::in|std::ios::binary);
 	if (!file.is_open())
-		throw std::runtime_error("Could not open file");
+		return file_not_found;
 
 	uint t;
 
@@ -310,7 +313,7 @@ void Network::load(std::string file_name){
 	t = ntohl(t);
 
 	if(t != num_params){
-		throw std::runtime_error("Number of params in file don't match network params");
+		return wrong_param_num;
 	}
 
 	// tell compiler to read params as uint instead of float
@@ -324,6 +327,7 @@ void Network::load(std::string file_name){
 	}
 
 	file.close();
+	return success;
 }
 
 std::string get_formatted_name(Layer* l){

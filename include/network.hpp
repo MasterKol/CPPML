@@ -20,6 +20,12 @@ namespace CPPML {
 
 class Network {
 public:
+	enum Err {
+		success = 1,
+		file_not_found = -1,
+		wrong_param_num = -2,
+	};
+
 	const Cost_func* cost_func;
 	Optimizer* optimizer;
 
@@ -91,10 +97,10 @@ public:
 	void print_summary();
 
 	// writes model weights to designated file
-	void save(std::string file_name);
+	Err save(std::string file_name);
 
 	// reads model weights from designated file
-	void load(std::string file_name);
+	Err load(std::string file_name);
 private:
 	// This runs basically dfs topological sort on the nodes
 	// in the network so that each one will only rely on

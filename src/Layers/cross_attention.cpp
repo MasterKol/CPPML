@@ -3,6 +3,7 @@
 #include "../LinearAlgebra.hpp"
 #include "../random.hpp"
 #include <cmath>
+#include <iostream>
 
 namespace CPPML {
 
@@ -45,7 +46,8 @@ void get_shape(std::vector<Layer*> Ls, Shape* shape){
 	// loop over layers and compute input shape
 	for(Layer* l : Ls){
 		if((!set_width && shape->w() != l->output_shape.w()) || (set_width && l->output_shape.size() % shape->w() != 0)){
-			throw std::runtime_error("Input widths don't match");
+			std::cerr << "Input widths do not match in cross attention\n";
+			exit(-1);
 		}
 		shape->h(shape->h() + l->output_shape.size() / shape->w());
 	}
@@ -53,7 +55,8 @@ void get_shape(std::vector<Layer*> Ls, Shape* shape){
 
 bool CrossAttention::compile_(){
 	if(inputs.size() != Q_layers.size() + VK_layers.size()){
-		throw std::runtime_error("CrossAttention: add_input was used to add input. Use add_Q or add_VK instead");
+		std::cerr << "CrossAttention: add_input was used to add input. Use add_Q or add_VK instead";
+		exit(-1);
 	}
 
 	// clear inputs and add Q and VK inputs in correct input order

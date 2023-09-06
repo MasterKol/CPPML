@@ -1,6 +1,7 @@
 #include "maxpooling2d.hpp"
 
 #include <cfloat>
+#include <iostream>
 #include "../LinearAlgebra.hpp"
 
 namespace CPPML {
@@ -29,8 +30,9 @@ bool MaxPooling2d::compile_(){
 		// if the input is flat try to fix it else throw error
 		if(!((os.d() == 1 && os.h() == 1 && os.w() % multiple == 0) ||
 		   (os.h() != 1 && os.w() == input_shape.w() && os.h() == input_shape.h()))){
-			// FIXME print better error message
-			throw std::runtime_error("Input dimensions do not match");
+			std::cerr << "CNN Dimentions do not match.\n\tExpected: (" << input_shape.w() << ", "
+				<< input_shape.w() << ") got: (" << os.w() << ", " << os.h() << ")\n";
+			exit(-1);
 		}
 		input_shape.d(input_shape.d() + os.size() / multiple);
 	}
