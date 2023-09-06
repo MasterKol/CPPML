@@ -1,7 +1,8 @@
 #include "shape.hpp"
+
 #include <iostream>
 #include <string>
-#include <assert.h>
+#include <cassert>
 
 namespace CPPML {
 
@@ -13,30 +14,6 @@ Shape::Shape(int _w_, int _h_, int _d_, int _n_){
 	size_ = w_ * h_ * d_ * n_;
 }
 
-/*
-Shape operator + (Shape lhs, Shape rhs){
-	Shape out = lhs;
-
-	int i = 0;
-	for(; i < 4; i++){
-		if(lhs[i] != rhs[i]){
-			out[i] += rhs[i];
-			i++;
-			break;
-		}
-	}
-	//if(lhs.w != )
-
-	for(; i < 4; i++){
-		// dimensions do not match
-		assert(lhs[i] == rhs[i]);
-	}
-
-	out.size = lhs.size + rhs.size;
-
-	return out;
-}
-*/
 int Shape::operator [] (int ind){
 	return ((int*)this)[ind];
 }

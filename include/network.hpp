@@ -5,16 +5,17 @@ namespace CPPML {
 	class Network;
 }
 
+#include <string>
+#include <vector>
+#include <atomic>
+#include <string>
+
 #include "optimizer.hpp"
 #include "cost_func.hpp"
 #include "optimizer.hpp"
 #include "layer.hpp"
 #include "shape.hpp"
 #include "Layers/input.hpp"
-#include <string>
-#include <vector>
-#include <atomic>
-#include <string>
 
 namespace CPPML {
 

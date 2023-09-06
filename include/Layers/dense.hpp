@@ -2,7 +2,6 @@
 #define DENSE_LAYER_H
 
 #include "../layer.hpp"
-
 #include "../activation.hpp"
 
 namespace CPPML {

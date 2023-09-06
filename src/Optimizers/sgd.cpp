@@ -1,4 +1,5 @@
 #include "sgd.hpp"
+
 #include "../LinearAlgebra.hpp"
 
 namespace CPPML {

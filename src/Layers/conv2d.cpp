@@ -1,11 +1,12 @@
 #include "conv2d.hpp"
-#include "../activation.hpp"
-#include "../random.hpp"
 
-#include "../LinearAlgebra.hpp"
-#include <assert.h>
+#include <cassert>
 #include <cmath>
 #include <iostream>
+
+#include "../activation.hpp"
+#include "../random.hpp"
+#include "../LinearAlgebra.hpp"
 
 namespace CPPML {
 

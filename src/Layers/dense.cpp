@@ -1,8 +1,8 @@
 #include "dense.hpp"
 
-#include <assert.h>
-#include <stdio.h>
+#include <cassert>
 #include <cmath>
+
 #include "../random.hpp"
 #include "../LinearAlgebra.hpp"
 

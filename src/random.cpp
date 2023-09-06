@@ -1,9 +1,8 @@
 #include "random.hpp"
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
+
 #include <cmath>
 #include <random>
+
 #include "LinearAlgebra.hpp"
 
 namespace CPPML {

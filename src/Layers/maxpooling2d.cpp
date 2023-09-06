@@ -2,6 +2,7 @@
 
 #include <cfloat>
 #include <iostream>
+
 #include "../LinearAlgebra.hpp"
 
 namespace CPPML {

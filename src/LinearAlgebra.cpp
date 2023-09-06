@@ -1,6 +1,6 @@
 #include "LinearAlgebra.hpp"
 
-#if !defined(ACCEL)//!(defined(__has_include) && __has_include(<Accelerate/Accelerate.h>))
+#if !(defined(__has_include) && __has_include(<Accelerate/Accelerate.h>))
 
 #include <cmath>
 #include <string.h>

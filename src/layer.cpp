@@ -1,6 +1,8 @@
 #include "layer.hpp"
-#include "shape.hpp"
+
 #include <iostream>
+
+#include "shape.hpp"
 #include "LinearAlgebra.hpp"
 
 namespace CPPML {

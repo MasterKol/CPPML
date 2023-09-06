@@ -5,8 +5,9 @@ namespace CPPML {
 class Optimizer;
 }
 
+#include <cstdio>
+
 #include "network.hpp"
-#include <stdio.h>
 
 namespace CPPML {
 

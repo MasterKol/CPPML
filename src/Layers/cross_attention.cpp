@@ -1,9 +1,10 @@
 #include "cross_attention.hpp"
 
-#include "../LinearAlgebra.hpp"
-#include "../random.hpp"
 #include <cmath>
 #include <iostream>
+
+#include "../LinearAlgebra.hpp"
+#include "../random.hpp"
 
 namespace CPPML {
 

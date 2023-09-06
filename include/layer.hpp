@@ -1,11 +1,12 @@
 #ifndef LAYER_H
 #define LAYER_H
 
-#include "shape.hpp"
 #include <vector>
 #include <mutex>
-#include <assert.h>
+#include <cassert>
 #include <string>
+
+#include "shape.hpp"
 
 namespace CPPML {
 

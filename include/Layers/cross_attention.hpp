@@ -2,9 +2,9 @@
 #define CROSS_ATTENTION_HEADER
 
 #include <vector>
+#include <initializer_list>
 
 #include "../layer.hpp"
-#include <initializer_list>
 
 namespace CPPML {
 

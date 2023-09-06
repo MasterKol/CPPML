@@ -1,9 +1,10 @@
 #include "image_flatten.hpp"
-#include <assert.h>
 
-#include "../LinearAlgebra.hpp"
+#include <cassert>
 #include <cmath>
 #include <algorithm>
+
+#include "../LinearAlgebra.hpp"
 
 namespace CPPML {
 

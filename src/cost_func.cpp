@@ -1,7 +1,8 @@
 #include "cost_func.hpp"
 
-#include "LinearAlgebra.hpp"
 #include <cmath>
+
+#include "LinearAlgebra.hpp"
 
 namespace CPPML {
 

@@ -1,10 +1,11 @@
 #include "self_attention.hpp"
-#include "../random.hpp"
 
 #include <cmath>
-#include "../LinearAlgebra.hpp"
-#include <assert.h>
+#include <cassert>
 #include <iostream>
+
+#include "../LinearAlgebra.hpp"
+#include "../random.hpp"
 
 namespace CPPML {
 
