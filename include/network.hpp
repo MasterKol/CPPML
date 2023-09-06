@@ -1,10 +1,6 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
-namespace CPPML {
-	class Network;
-}
-
 #include <string>
 #include <vector>
 #include <atomic>
@@ -18,6 +14,9 @@ namespace CPPML {
 #include "Layers/input.hpp"
 
 namespace CPPML {
+
+class Input;
+class Optimizer;
 
 class Network {
 public:

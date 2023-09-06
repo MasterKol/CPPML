@@ -1,14 +1,12 @@
 #ifndef INPUT_LAYER_H
 #define INPUT_LAYER_H
 
-namespace CPPML {
-class Input;
-}
-
 #include "../layer.hpp"
 #include "../network.hpp"
 
 namespace CPPML {
+
+class Network;
 
 /*
  * Special layer type used exclusively for input into a network.

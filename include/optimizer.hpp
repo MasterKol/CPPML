@@ -1,15 +1,13 @@
 #ifndef OPTIMIZER_H
 #define OPTIMIZER_H
 
-namespace CPPML {
-class Optimizer;
-}
-
 #include <cstdio>
 
 #include "network.hpp"
 
 namespace CPPML {
+
+class Network;
 
 class Optimizer {
 public:
