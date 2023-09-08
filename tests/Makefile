@@ -7,7 +7,7 @@ TEST_LINK_FLAGS=-L/usr/local/opt/libomp/lib -lomp ../libcppml.a -framework Accel
 .PHONY: all
 
 all: $(TEST_CASES:.cpp=.tst)
-	./runtests.sh
+	./runtests
 
 %.tst: %.cpp
 	${CC} ${TEST_FLAGS} $< -o $@
