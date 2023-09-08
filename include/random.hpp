@@ -36,6 +36,10 @@ public:
 
 	// sets the random seed
 	static void rand_seed(int seed);
+
+	// sets the random seed based on the current time
+	// basically randomizes the generator state
+	static void time_seed();
 };
 
 }
