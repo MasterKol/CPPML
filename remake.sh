@@ -1,16 +1,15 @@
-#!BASH
+#!/bin/bash
 
 cd src
 
-INCLUDE="../include"
-
-SOURCES=`echo ./*.cpp ./*/*.cpp`
-OBJECTS=`for SOURCE in $SOURCES; do echo -n $\{BP}"/$(basename ${SOURCE%.*}.o) "; done`
-CFLAGS="-std=c++17 -O3 -Xclang -fopenmp -I/usr/local/opt/libomp/include -I${INCLUDE} -I${INCLUDE}/Layers -I${INCLUDE}/Optimizers"
+# settings
+CFLAGS="-std=c++17 -O2 -Xclang -fopenmp -I/usr/local/opt/libomp/include -I${INCLUDE} -I${INCLUDE}/Layers -I${INCLUDE}/Optimizers"
 BP="../bin"
 CC="clang++"
 
-#`echo *.cpp */*.cpp`
+INCLUDE="../include"
+SOURCES=`echo ./*.cpp ./*/*.cpp`
+OBJECTS=`for SOURCE in $SOURCES; do echo -n $\{BP}"/$(basename ${SOURCE%.*}.o) "; done`
 
 OUTFILE=Makefile
 
@@ -30,8 +29,11 @@ echo -e '${BP}:\n\tmkdir ${BP}\n\tmkdir ${BP}/Layers\n\tmkdir ${BP}/Optimizers\n
 for SOURCE in $SOURCES
 do
 	BASEPATH=${SOURCE%/*}
+	# get all internal headers from cpp and hpp file
 	HEADERS=`awk -F \" -v bp=$BASEPATH '/\#include \"/ {print "${INC}/"bp"/" $2}' $SOURCE ${INCLUDE}/${SOURCE%.*}.hpp`
+	# write target and dependencies line to makefile
 	echo \${BP}/$(basename ${SOURCE%.*}).o : $SOURCE $HEADERS >> ${OUTFILE}
+	# write standard general compile line
 	echo -e '\t${CC} ${CFLAGS} -c $< -o $@\n' >> ${OUTFILE}
 done
 

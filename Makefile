@@ -21,6 +21,8 @@ LinearAlgebra.o
 
 OBJECTS = $(addprefix ${BP}/, ${NORMAL})
 
+.PHONY: all test
+
 all:
 	bash remake.sh
 	(cd src && make)
@@ -29,3 +31,7 @@ all:
 clean:
 	rm bin/*.o
 	rm src/Makefile
+	rm tests/*.tst
+
+test: all
+	(cd tests && make)
