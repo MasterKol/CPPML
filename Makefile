@@ -25,8 +25,8 @@ OBJECTS = $(addprefix ${BP}/, ${NORMAL})
 
 all:
 	bash remake.sh
-	(cd src && make)
-	ar -r libcppml.a ${OBJECTS}
+#	remake libcppml.a only if other make file needs to do something
+	(cd src && make -q || (make && cd .. && ar -r libcppml.a ${OBJECTS}))
 
 clean:
 	rm bin/*.o
@@ -34,4 +34,4 @@ clean:
 	rm tests/*.tst
 
 test: all
-	(cd tests && make)
+	./tests/runtests

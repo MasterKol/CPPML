@@ -2,12 +2,12 @@ CC=clang++
 
 TEST_CASES= $(shell echo *.cpp)
 
-TEST_LINK_FLAGS=-L/usr/local/opt/libomp/lib -lomp ../libcppml.a -framework Accelerate -I../include -std=c++17 -g
+TEST_FLAGS=-L/usr/local/opt/libomp/lib -lomp ../libcppml.a -framework Accelerate -std=c++17
 
-.PHONY: all
+#.PHONY: all
 
-all: $(TEST_CASES:.cpp=.tst)
-	./runtests
+#all: $(TEST_CASES:.cpp=.tst)
+#	./runtests
 
-%.tst: %.cpp
+%.tst: %.cpp ../libcppml.a
 	${CC} ${TEST_FLAGS} $< -o $@

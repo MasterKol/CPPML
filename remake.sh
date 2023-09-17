@@ -2,12 +2,12 @@
 
 cd src
 
+INCLUDE="../include"
 # settings
 CFLAGS="-std=c++17 -O2 -Xclang -fopenmp -I/usr/local/opt/libomp/include -I${INCLUDE} -I${INCLUDE}/Layers -I${INCLUDE}/Optimizers"
 BP="../bin"
 CC="clang++"
 
-INCLUDE="../include"
 SOURCES=`echo ./*.cpp ./*/*.cpp`
 OBJECTS=`for SOURCE in $SOURCES; do echo -n $\{BP}"/$(basename ${SOURCE%.*}.o) "; done`
 
