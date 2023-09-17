@@ -43,8 +43,9 @@ public:
 	int h() const { return h_; }
 	int d() const { return d_; }
 	int n() const { return n_; }
+	int size() const {return size_;};
+	
 	int size();
-
 	void w(int new_w);
 	void h(int new_h);
 	void d(int new_d);
