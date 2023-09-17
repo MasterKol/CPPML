@@ -3,40 +3,49 @@
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$parent_path"
 
-TESTS=*.tst
+sources=(*.cpp)
+tests="${sources[@]/.cpp/.tst}"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
 if [[ $# -eq 1 ]]; then
-	if [[ -f "$1.tst" ]]; then
-		TEST="$1.tst"
+	if [[ -f "$1.cpp" ]]; then
+		test="$1.tst"
 	elif [[ -f $1 ]]; then
-		TEST=$1
+		test=$1
 	else
 		echo Test $1 does not exist
 		exit 1
 	fi
 
-	./$TEST
+	make $test
+
+	./$test
 	if [[ $? -eq 0 ]]; then 	# success
-		echo -e "${GREEN}Passed ${TEST}${NC}"
+		echo -e "${GREEN}Passed ${test}${NC}"
 		exit 0
 	else 						# failure
-		echo -e "\n${RED}Failed Test ${TEST}${NC}"
+		echo -e "\n${RED}Failed Test ${test}${NC}"
 		exit 1
 	fi
 fi
 
-for TEST in $TESTS; do
-	./$TEST >& /dev/null
+# make temp file
+tmpfile=$(mktemp /tmp/abc-script.XXXXXX)
+exec 3>"$tmpfile"
+exec 4<"$tmpfile"
+rm "$tmpfile"
+
+for test in $tests; do
+	make $test
+	./$test >&3
 	if [[ $? -eq 0 ]]; then 	# success
-		echo -e "${GREEN}Passed ${TEST}${NC}"
+		echo -e "${GREEN}Passed ${test}${NC}"
 	else 						# failure
-		echo
-		./$TEST
-		echo -e "\n${RED}Failed Test ${TEST}${NC}"
-		break
+		cat <&4
+		echo -e "\n${RED}Failed Test ${test}${NC}"
+		exit 1
 	fi
 done
