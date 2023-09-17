@@ -9,19 +9,19 @@
 namespace CPPML {
 
 /**************** LINEAR ****************/
-void linear_f(float* input, float* output, int length){
+void linear_f(const float* input, float* output, int length){
 	if(input != output){
 		memcpy(output, input, length * sizeof(float));
 	}
 }
 
-void linear_df(float* input, float* output, int length){
+void linear_df(const float* input, float* output, int length){
 	const float one = 1;
 	vDSP_vfill(&one, output, 1, length);
 }
 
 /**************** ELU ****************/
-void elu_f(float* input, float* output, int length){
+void elu_f(const float* input, float* output, int length){
 	float* t = new float[length];
 	vDSP_vnabs(input, 1, t, 1, length); // t <- -abs(in)
 	vvexpm1f(t, t, &length); // t <- e^t - 1
@@ -29,7 +29,7 @@ void elu_f(float* input, float* output, int length){
 	delete[] t;
 }
 
-void elu_df(float* input, float* output, int length){
+void elu_df(const float* input, float* output, int length){
 	const float nInif = -__FLT_MAX__; // -infinity
 	const float one = 1.0f; // one
 
@@ -38,13 +38,13 @@ void elu_df(float* input, float* output, int length){
 }
 
 /**************** RELU ****************/
-void relu_f(float* input, float* output, int length){
+void relu_f(const float* input, float* output, int length){
 	const float zero = 0;
 
 	vDSP_vthres(input, 1, &zero, output, 1, length); // out <- max(out, 0)
 }
 
-void relu_df(float* input, float* output, int length){
+void relu_df(const float* input, float* output, int length){
 	const float zero = 0;
 	const float one = 1;
 
@@ -53,7 +53,7 @@ void relu_df(float* input, float* output, int length){
 }
 
 /**************** SIGMOID ****************/
-void sigmoid_f(float* input, float* output, int length){ // computes 1 / (1 + e^-x) for all x in d
+void sigmoid_f(const float* input, float* output, int length){ // computes 1 / (1 + e^-x) for all x in d
 	vDSP_vneg(input, 1, output, 1, length); // out <- -in
 	vvexpf(output, output, &length); // out <- e^out
 	const float one = 1.0;
@@ -61,7 +61,7 @@ void sigmoid_f(float* input, float* output, int length){ // computes 1 / (1 + e^
 	vvrecf(output, output, &length); // out <- 1/out
 }
 
-void sigmoid_df(float* input, float* output, int length){ // computes (1 / (1 + e^-x)), x <- t * t - t for all x in d
+void sigmoid_df(const float* input, float* output, int length){ // computes (1 / (1 + e^-x)), x <- t * t - t for all x in d
 	vDSP_vneg(input, 1, output, 1, length); // out <- -in
 	vvexpf(output, output, &length); // out <- e^out
 	const float one = 1.0;
@@ -73,7 +73,7 @@ void sigmoid_df(float* input, float* output, int length){ // computes (1 / (1 + 
 }
 
 /**************** SOFTMAX ****************/
-void softmax_f(float* input, float* output, int length){
+void softmax_f(const float* input, float* output, int length){
 	// this slightly odd implementation of softmax gives more
 	// numerical stability than direct application of the formula
 
@@ -96,16 +96,16 @@ void softmax_f(float* input, float* output, int length){
 	vDSP_vsdiv(output, 1, &total, output, 1, length);
 }
 
-void softmax_df(float* input, float* output, int length){
+void softmax_df(const float* input, float* output, int length){
 	float dt;
-	// dt = dS . S
+	// dt = out . in
 	vDSP_dotpr(output, 1, input, 1, &dt, length);
 	
-	// dS -= dt
+	// out -= dt
 	dt = -dt;
-	vDSP_vsadd(output, 1, &dt, output, 1, length);
+	vDSP_vsadd(input, 1, &dt, output, 1, length);
 	
-	// dQKT = S .* dS (write to S)
+	// out = in .* out
 	vDSP_vmul(input, 1, output, 1, output, 1, length);
 }
 

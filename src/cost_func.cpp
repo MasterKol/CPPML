@@ -1,6 +1,7 @@
 #include "cost_func.hpp"
 
 #include <cmath>
+#include <memory>
 
 #include "LinearAlgebra.hpp"
 
@@ -22,11 +23,12 @@ void mse_get_cost_derv(float* x, float* y, float* out, int length){
 
 /**************** Mean Absolute Error ****************/
 float mae_get_cost(float* x, float* y, int length){
-	vDSP_vsub(y, 1, x, 1, x, 1, length);
+	std::unique_ptr<float[]> t(new float[length]);
+	vDSP_vsub(y, 1, x, 1, t.get(), 1, length); // t = x - y
 	float absum;
-	vDSP_svemg(x, 1, &absum, length);
+	vDSP_svemg(t.get(), 1, &absum, length);	// absum = sum(|t|)
 	//float absum = cblas_sasum(length, x, 1);
-	vDSP_vadd(y, 1, x, 1, x, 1, length);
+	//vDSP_vadd(y, 1, x, 1, x, 1, length);
 
 	return absum / length;
 }
@@ -36,9 +38,9 @@ void mae_get_cost_derv(float* x, float* y, float* out, int length){
 	float rlength = 1.0f / length;
 	vDSP_vfill(&rlength, out, 1, length); // fill output array with magnitude of final output
 
-	vDSP_vsub(y, 1, x, 1, x, 1, length); // calculate x <- x - y
-	vvcopysignf(out, out, x, &length); // copy sign of x - y to output array
-	vDSP_vadd(y, 1, x, 1, x, 1, length); // reset x by calculating x <- x + y
+	std::unique_ptr<float[]> t(new float[length]);
+	vDSP_vsub(y, 1, x, 1, t.get(), 1, length); // calculate t <- x - y
+	vvcopysignf(out, out, t.get(), &length); // copy sign of x - y to output array
 }
 
 /**************** Huber ****************/
@@ -46,8 +48,8 @@ float huber_get_cost(float* x, float* y, int length){
 	float out = 0;
 	float diff;
 	for(int i = 0; i < length; i++){
-		diff = fabs(x[i] - y[i]);
-		out += (diff < 1) ? diff * diff : diff;
+		diff = std::abs(x[i] - y[i]);
+		out += (diff < 1) ? diff * diff * 0.5 : diff - 0.5;
 	}
 
 	return out / length;
@@ -71,7 +73,7 @@ void huber_get_cost_derv(float* x, float* y, float* out, int length){
 float cross_entropy_get_cost(float* x, float* y, int length){
 	float out = 0;
 	for(int i = 0; i < length; i++){
-		if(y[i] == 0)
+		if(x[i] <= 0 || y[i] == 0)
 			continue;
 		out -= y[i] * log(x[i]);
 	}
@@ -79,7 +81,9 @@ float cross_entropy_get_cost(float* x, float* y, int length){
 }
 
 void cross_entropy_get_cost_derv(float* x, float* y, float* out, int length){
-	vDSP_vsub(y, 1, x, 1, out, 1, length);
+	//vDSP_vsub(y, 1, x, 1, out, 1, length);
+	vDSP_vdiv(x, 1, y, 1, out, 1, length);
+	vDSP_vneg(out, 1, out, 1, length);
 }
 
 }
