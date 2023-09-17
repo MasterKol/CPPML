@@ -18,6 +18,24 @@ namespace CPPML {
 class Input;
 class Optimizer;
 
+/************************************************************
+ * Network build process:
+ * 1.) Network object is created
+ * 2.) Layers are added
+ * 3.) User calls compile(optimizer*)
+ * 	  	(Maybe include and expand() command to allow layers to change their input / outputs)
+ *    a.) Find singular output layer
+ *    b.) Layers are ordered according to DAG
+ *    c.) Find and check all input layers
+ *    d.) Each layer is compiled and its stats are recorded
+ *    e.) Allocate memory and assign it to layers
+ *    f.) compile optimizer
+ ************************************************************/
+
+/*
+ * Stores a network and all of its contents, manages
+ * gradients and optimizer during training.
+ */
 class Network {
 public:
 	enum Err {
