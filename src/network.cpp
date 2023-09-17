@@ -103,7 +103,9 @@ void Network::compile(Optimizer* optimizer_){
 	// that it has information about how many params
 	// are in the network
 	optimizer = optimizer_;
-	optimizer->compile(this);
+	if(optimizer != nullptr){
+		optimizer->compile(this);
+	}
 
 	// set output_shape
 	output_length = output_layer->output_shape.size();
