@@ -20,7 +20,12 @@ if [[ $# -eq 1 ]]; then
 		exit 1
 	fi
 
+	(cd .. && make)
+
 	make $test
+	if [[ $? -ne 0 ]]; then 	# build failed
+		exit 1
+	fi
 
 	./$test
 	if [[ $? -eq 0 ]]; then 	# success
@@ -40,7 +45,11 @@ rm "$tmpfile"
 
 for test in $tests; do
 	make $test
-	./$test >&3
+	if [[ $? -ne 0 ]]; then 	# build failed
+		exit 1
+	fi
+	
+	./$test >&3 2>&3
 	if [[ $? -eq 0 ]]; then 	# success
 		echo -e "${GREEN}Passed ${test}${NC}"
 	else 						# failure
