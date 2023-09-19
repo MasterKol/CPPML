@@ -47,12 +47,13 @@ void Random::rand_seed(int seed){
 	rng = std::mt19937(seed);
 }
 
-void Random::time_seed(){
+int Random::time_seed(){
 	using namespace std::chrono;
 	int ms = duration_cast< milliseconds >(
 		steady_clock::now().time_since_epoch()
 	).count();
 	rng = std::mt19937(ms);
+	return ms;
 }
 
 } // namespace CPPML
