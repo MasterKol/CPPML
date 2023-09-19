@@ -103,9 +103,8 @@ void Network::compile(Optimizer* optimizer_){
 	// that it has information about how many params
 	// are in the network
 	optimizer = optimizer_;
-	if(optimizer != nullptr){
+	if(optimizer)
 		optimizer->compile(this);
-	}
 
 	// set output_shape
 	output_length = output_layer->output_shape.size();
@@ -252,7 +251,7 @@ void Network::fit_network(float* example, float* target, float* lio_, float* int
 	if(loss != nullptr){
 		*loss = cost_func->get_cost(lio + oi, target, output_length);
 	}
-
+	
 	// iterate over layers backwards and backpropagate
 	// through them
 	for(auto l = layers.rbegin(); l != layers.rend(); l++){
