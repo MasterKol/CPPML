@@ -4,7 +4,7 @@ cd src
 
 INCLUDE="../include"
 # settings
-CFLAGS="-std=c++17 -O2 -Xclang -fopenmp -I/usr/local/opt/libomp/include -I${INCLUDE} -I${INCLUDE}/Layers -I${INCLUDE}/Optimizers"
+CFLAGS="-std=c++17 -O2 -Xclang -fopenmp -I/usr/local/opt/libomp/include -I${INCLUDE} -I${INCLUDE}/Layers -I${INCLUDE}/Optimizers -Wall"
 BP="../bin"
 CC="clang++"
 

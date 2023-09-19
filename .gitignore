@@ -3,3 +3,4 @@ bin
 src/Makefile
 libcppml.a
 tests/*.tst
+tests/*.dSYM
