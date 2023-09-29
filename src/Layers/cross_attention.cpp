@@ -323,8 +323,7 @@ void CrossAttention::get_change_grads(float* out_change, float* input_change,
 
 	// factor that QK^T is scaled by, the paper says to do
 	// this but idk how necessary it is
-	const float inv_norm_factor = sqrtf((float)qk_embed_size);
-	const float norm_factor = 1.0f / inv_norm_factor;
+	const float norm_factor = 1.0f / sqrtf((float)qk_embed_size);
 
 	for(int i = 0; i < num_heads; i++){
 		attention_head(Qin, VKin, q_mat_h, k_mat_h, v_mat_h, z_mat_h, Q,
@@ -365,7 +364,7 @@ void CrossAttention::get_change_grads(float* out_change, float* input_change,
 
 			// dQKT *= inv_norm_scale (undo scaling)
 			// do it here because maybe its better for the cache?
-			vDSP_vsmul(S, 1, &inv_norm_factor, S, 1, VK_shape.h());
+			vDSP_vsmul(S, 1, &norm_factor, S, 1, VK_shape.h());
 
 			dS += VK_shape.h();
 			S  += VK_shape.h();
