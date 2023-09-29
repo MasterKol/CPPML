@@ -1,4 +1,5 @@
-* Add 
+* Add Batch processing for Batch norm
 * Switch all new / delete to unique / shared pointers
 * Add tests
 * Add simple NLP
+* Fix Network crashing on compile when no layers are added

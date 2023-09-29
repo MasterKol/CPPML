@@ -29,9 +29,10 @@ all:
 	(cd src && make -q || (make && cd .. && ar -r libcppml.a ${OBJECTS}))
 
 clean:
-	rm bin/*.o
-	rm src/Makefile
-	rm tests/*.tst
+	rm bin/*.o || true
+	rm src/Makefile || true
+	rm tests/*.tst || true
+	rm -r tests/*.dSYM || true
 
 test: all
 	./tests/runtests

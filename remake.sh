@@ -2,38 +2,74 @@
 
 cd src
 
-INCLUDE="../include"
+include="../include"
 # settings
-CFLAGS="-std=c++17 -O2 -Xclang -fopenmp -I/usr/local/opt/libomp/include -I${INCLUDE} -I${INCLUDE}/Layers -I${INCLUDE}/Optimizers -Wall"
-BP="../bin"
-CC="clang++"
+cflags="-std=c++17 -O2 -Xclang -fopenmp -I/usr/local/opt/libomp/include -I${include} -I${include}/Layers -I${include}/Optimizers -Wall -g"
+bp="../bin"
+cc="clang++"
 
-SOURCES=`echo ./*.cpp ./*/*.cpp`
-OBJECTS=`for SOURCE in $SOURCES; do echo -n $\{BP}"/$(basename ${SOURCE%.*}.o) "; done`
+search_paths=". ${include} ${include}/Layers ${include}/Optimizers ./Layers ./Optimizers"
+sources=`echo ./*.cpp ./*/*.cpp`
+objects=`for source in $sources; do echo -n $\{bp}"/$(basename ${source%.*}.o) "; done`
 
-OUTFILE=Makefile
+outfile=Makefile
 
-touch ${OUTFILE}
+function simplifyPath(){
+	for file in "$@"; do
+		# sed command first removes */.. , then replaces /./ with / , then removes leading ./ , then reduces //+ to /
+		# if sed is not installed then file is returned unchanged
+		echo "$file" | sed -E 's/[a-zA-Z0-9_]+\/\.{2}\///g; s/\/\.\//\//g; s/^\.?\///g; s/\/{2,}/\//g' 2> /dev/null || echo "$file"
+	done
+}
 
-echo " " > ${OUTFILE}
+function findFile() {
+	for file in "$@"; do
+		if test -f $file; then
+			echo -n "$file "
+			continue
+		fi
 
-echo CC=${CC} >> ${OUTFILE}
-echo BP=${BP} >> ${OUTFILE}
-echo CFLAGS=${CFLAGS} >> ${OUTFILE}
-echo INC=${INCLUDE} >> ${OUTFILE}
-echo ".PHONY: all" >> ${OUTFILE}
-echo "all: \${BP} ${OBJECTS}" >> ${OUTFILE}
-echo "" >> ${OUTFILE}
-echo -e '${BP}:\n\tmkdir ${BP}\n\tmkdir ${BP}/Layers\n\tmkdir ${BP}/Optimizers\n' >>${OUTFILE}
+		for spath in $search_paths; do
+			if test -f "$spath/$file"; then
+				echo -n "$spath/$file "
+			fi
+		done
+	done
+	exit 1
+}
 
-for SOURCE in $SOURCES
+function getHeaders() {
+	file=$(findFile "$1")
+	basepath=${file%/*}
+	headers=$(awk -F \" -v bp=$basepath '/\#include \"/ {print $2}' $file)
+	simplifyPath $(findFile $headers)
+}
+
+touch ${outfile}
+
+# write header info to start of outfile
+cat > $outfile << EOM
+cc=${cc}
+bp=${bp}
+cflags=${cflags}
+inc=${include}
+.PHONY: all
+all: \${bp} ${objects}
+
+\${bp}:
+	mkdir \${bp}
+	tmkdir \${bp}/Layers
+	mkdir \${bp}/Optimizers
+
+EOM
+
+for source in $sources
 do
-	BASEPATH=${SOURCE%/*}
+	basepath=${source%/*}
 	# get all internal headers from cpp and hpp file
-	HEADERS=`awk -F \" -v bp=$BASEPATH '/\#include \"/ {print "${INC}/"bp"/" $2}' $SOURCE ${INCLUDE}/${SOURCE%.*}.hpp`
+	headers="$(getHeaders $source) $(getHeaders ${source%.*}.hpp)"
 	# write target and dependencies line to makefile
-	echo \${BP}/$(basename ${SOURCE%.*}).o : $SOURCE $HEADERS >> ${OUTFILE}
+	echo \${bp}/$(basename ${source%.*}).o : $source $headers >> ${outfile}
 	# write standard general compile line
-	echo -e '\t${CC} ${CFLAGS} -c $< -o $@\n' >> ${OUTFILE}
+	echo -e '\t${cc} ${cflags} -c $< -o $@\n' >> ${outfile}
 done
-
