@@ -18,7 +18,7 @@ function simplifyPath(){
 	for file in "$@"; do
 		# sed command first removes */.. , then replaces /./ with / , then removes leading ./ , then reduces //+ to /
 		# if sed is not installed then file is returned unchanged
-		echo "$file" | sed -E 's/[a-zA-Z0-9_]+\/\.{2}\///g; s/\/\.\//\//g; s/^\.?\///g; s/\/{2,}/\//g' 2> /dev/null || echo "$file"
+		echo "$file" | sed -E 's/[^\/]+\/\.{2}\///g; s/\/\.\//\//g; s/^\.?\///g; s/\/{2,}/\//g' 2> /dev/null || echo "$file"
 	done
 }
 
