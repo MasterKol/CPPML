@@ -23,10 +23,12 @@ OBJECTS = $(addprefix ${BP}/, ${NORMAL})
 
 .PHONY: all test
 
-all:
-	bash remake.sh
+all: src/Makefile
 #	remake libcppml.a only if other make file needs to do something
 	(cd src && make -q || (make && cd .. && ar -r libcppml.a ${OBJECTS}))
+
+src/Makefile: src/*.* src/*/*.* include/*.* include/*/*.*
+	bash remake.sh
 
 clean:
 	rm bin/*.o || true
