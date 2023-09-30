@@ -38,16 +38,21 @@ if [[ $# -eq 1 ]]; then
 fi
 
 # make temp file
-tmpfile=$(mktemp /tmp/abc-script.XXXXXX)
-exec 3>"$tmpfile"
-exec 4<"$tmpfile"
-rm "$tmpfile"
+#tmpfile=$(mktemp /tmp/CPPML-test-script.XXXXXX)
+#exec 3>"$tmpfile"
+#exec 4<"$tmpfile"
+#rm "$tmpfile"
 
 for test in $tests; do
 	make $test
 	if [[ $? -ne 0 ]]; then 	# build failed
 		exit 1
 	fi
+
+	tmpfile=$(mktemp /tmp/CPPML-test-script.XXXXXX)
+	exec 3>"$tmpfile"
+	exec 4<"$tmpfile"
+	rm "$tmpfile"
 	
 	./$test >&3 2>&3
 	if [[ $? -eq 0 ]]; then 	# success
@@ -57,4 +62,7 @@ for test in $tests; do
 		echo -e "\n${RED}Failed Test ${test}${NC}"
 		exit 1
 	fi
+
+	exec 3>&-
+	exec 4<&-
 done

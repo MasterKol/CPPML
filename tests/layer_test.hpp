@@ -8,64 +8,145 @@
 #include "../include/Layers/input.hpp"
 #include "../include/cost_func.hpp"
 
-extern CPPML::Shape input_shape;
-CPPML::Shape output_shape;
+int input_length, output_length;
 
-const float h = 1e-4;
-const float epsilon = 1e-2;
+float h = 1 / 256.0f;
+float epsilon = 1e-2;
 
 float *input, *target, *gradients, *input_change;
 CPPML::Network* net;
 
 float original_loss = 0;
 
-void setup(CPPML::Layer* layer, int seed = 0){
-	/**** SETUP ****/
-	if(seed == 0)
-		std::cerr << "random seed: " << CPPML::Random::time_seed() << "\n";
-	
-	// make network
-	net = new CPPML::Network(CPPML::MAE);
+float getDerv(float*);
+void setup(int);
 
-	CPPML::Layer* l = new CPPML::Input(input_shape, net);
-	layer->add_input(l);
+/// @brief Checks derivative of network inputs and compares
+///		   them to empirical value
+void checkInputGradients(){
+	float avg = 0;
+	for(int i = 0; i < input_length; i++){
+		float calc = getDerv(input + i);
+		if(calc == 0)
+			continue;
+		float err = std::abs((calc - gradients[i]) / calc);
+		avg += err;
 
-	net->compile(nullptr);
-
-	output_shape = net->output_layer->output_shape;
-
-	// initialize memory
-	input = new float[input_shape.size()];
-	target = new float[output_shape.size()];
-	gradients = new float[net->num_params];
-	input_change = new float[net->last_io_size];
-
-	// fill input with random values
-	CPPML::Random::fillGaussian(input, input_shape.size(), 0, 1);
-	/*input[0] = CPPML::Random::randF(-0.1, 0.1);
-	for(int i = 1; i < input_shape.size(); i++){
-		input[i] = (std::abs(input[i - 1]) + CPPML::Random::randF(3, 10) * h) * (CPPML::Random::randI(1) * 2 - 1);
-	}*/
-
-	// fill output with random values
-	float* output = new float[output_shape.size()];
-	net->eval(input, output);
-	for(int i = 0; i < output_shape.size(); i++){
-		target[i] = output[i] + 10 * h;
+		std::cerr << i << ", " << err << ", " << calc << ", " << gradients[i] << "\n";
 	}
+	avg /= input_length;
 
-	// get original loss, input change, and weight gradients
-	net->fit_network(input, target, nullptr, nullptr, input_change, &original_loss);
-	memcpy(gradients, net->gradients, net->num_params * sizeof(float));
+	std::cerr << "Input derivative avg error = " << avg * 100 << "%\n";
+	if(avg > epsilon || avg < 0 || isnan(avg)){
+		exit(-1);
+	}
 }
 
-float getErr(float* toChange, float* givenGrad){
+/// @brief Checks derivative of network parameters and compares
+// 		   them to empirical value
+void checkParameterGradients(){
+	if(net->num_params == 0)
+		return;  // some layers don't have parameters so just exit early
+	
+	float avg = 0;
+	for(int i = 0; i < net->num_params; i++){
+		float calc = getDerv(net->params + i);
+		if(calc == 0)
+			continue;
+		float err = std::abs((calc - gradients[i]) / calc);
+		avg += err;
+
+		std::cerr << i << ", " << err << ", " << calc << ", " << gradients[i] << "\n";
+	}
+	avg /= net->num_params;
+
+	//std::cerr << "Var: " << var << "\n";
+	//std::cerr << "T: " << avg / var / std::sqrt(net->num_params) << "\n";
+	std::cerr << "Parameter derivative average error = " << avg * 100 << "%\n";
+	if(avg > epsilon || avg < 0 || isnan(avg)){
+		exit(-1);
+	}
+}
+
+float eval(float* toChange, float dx){
+	float t = *toChange;
+	(*toChange) += dx;
+	float out = 0;
+	net->fit_network(input, target, 1, &out);
+	*toChange = t;
+	return out;
+}
+
+/// @brief Gets numerical derivative of given value in the network
+/// @param toChange Pointer to the value to be changed
+/// @return Derivative cost wrt given value
+float getDerv(float* toChange){
+	float costmh  = -8 * eval(toChange, -  h);
+	float costph  =  8 * eval(toChange,    h);
+	float cost2mh =      eval(toChange, -2*h);
+	float cost2ph = -    eval(toChange,  2*h);
+
+	return (costph + costmh + cost2ph + cost2mh) / (12 * h);
+}
+
+/*
+float getDerv(float* toChange){
 	float t = *toChange;
 	(*toChange) += h;
 	float new_loss = 0;
 	net->fit_network(input, target, 1, &new_loss);
 	*toChange = t;
 
-	float calc = (new_loss - original_loss) / h;
-	return std::abs(calc - *givenGrad);
+	return (new_loss - original_loss) / h;
+}
+*/
+
+/// @brief Sets up net for a single layer to be tested
+/// @param layer layer to be tested, will be added to a network
+/// @param input_shape shape of input to the network (and the given layer)
+/// @param seed seed for random number generator (random if 0)
+void setup(CPPML::Layer* layer, CPPML::Shape input_shape, int seed = 0){
+	net = new CPPML::Network(CPPML::MAE);
+
+	CPPML::Layer* l = new CPPML::Input(input_shape, net);
+	layer->add_input(l);
+	setup(seed);
+}
+
+/// @brief allows user to setup net, compiles and does all setup afterwards
+/// @param seed seed for random number generator (random if 0)
+void setup(int seed = 0){
+	/**** SETUP ****/
+	if(seed == 0){
+		std::cerr << "random seed: " << CPPML::Random::time_seed() << "\n";
+	}else{
+		CPPML::Random::rand_seed(seed);
+		std::cerr << "random seed: " << seed << "\n";
+	}
+	
+	// make network
+	net->compile(nullptr);
+
+	output_length = net->output_length;
+	input_length = net->input_length;
+
+	// initialize memory
+	input = new float[input_length];
+	target = new float[output_length];
+	gradients = new float[net->num_params];
+	input_change = new float[net->last_io_size];
+
+	// fill input with random values
+	CPPML::Random::fillGaussian(input, input_length, 0, 1);
+
+	// fill output with random values
+	float* output = new float[output_length];
+	net->eval(input, output);
+	for(int i = 0; i < output_length; i++){
+		target[i] = output[i] + 10 * h;
+	}
+
+	// get original loss, input change, and weight gradients
+	net->fit_network(input, target, nullptr, nullptr, input_change, &original_loss);
+	memcpy(gradients, net->gradients, net->num_params * sizeof(float));
 }

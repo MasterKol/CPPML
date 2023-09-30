@@ -6,32 +6,11 @@
 #include "../include/shape.hpp"
 #include "../include/activation.hpp"
 
-CPPML::Shape input_shape = CPPML::Shape(30);
-
 int main(){
-	setup(new CPPML::Dense(25, CPPML::LINEAR));
+	setup(new CPPML::Dense(25, CPPML::LINEAR), CPPML::Shape(30));
 
-	/**** CHECK THAT INPUT GRADIENTS MATCH ****/
-
-	for(int i = 0; i < input_shape.size(); i++){
-		float calc = getErr(input + i, input_change + i);
-		if(calc > epsilon){
-			std::cerr << "Incorrect derivative of inputs, got: " 
-				<< input_change[i] << ", but expected: " << calc << "\n";
-			return 1;
-		}
-	}
-
-	/**** CHECK THAT PARAMETER GRADIENTS MATCH ****/
-
-	for(int i = 0; i < net->num_params; i++){
-		float calc = getErr(net->params + i, gradients + i);
-		if(calc > epsilon){
-			std::cerr << "Incorrect derivative of parameters, got: " 
-				<< gradients[i] << ", but expected: " << calc << "\n";
-			return 1;
-		}
-	}
+	checkInputGradients();
+	checkParameterGradients();
 
 	return 0;
 }
