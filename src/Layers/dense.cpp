@@ -4,15 +4,16 @@
 #include <cmath>
 
 #include "../random.hpp"
+#include "../activation_func.hpp"
 #include "../LinearAlgebra.hpp"
 
 namespace CPPML {
 
-Dense::Dense(int nodes, const Activation* const activation_) : Layer() {
+Dense::Dense(int nodes, const ActivationFunc* const activation_) : Layer() {
 	init(nodes, activation_);
 }
 
-void Dense::init(int nodes, const Activation* const activation_){
+void Dense::init(int nodes, const ActivationFunc* const activation_){
 	output_shape = Shape(nodes);
 	activation = activation_;
 }

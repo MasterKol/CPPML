@@ -1,7 +1,7 @@
 #ifndef CONV2D_HEADER
 #define CONV2D_HEADER
 
-#include "../activation.hpp"
+#include "../activation_func.hpp"
 #include "../layer.hpp"
 
 namespace CPPML {
@@ -19,15 +19,15 @@ public:
 	int padding;
 	float *filters, *biases;
 	float *filter_grads, *bias_grads;
-	const Activation* activation;
+	const ActivationFunc* activation;
 
 	template<typename... Ts>
-	Conv2d(int kw, int kh, int d, const Activation* const activation_, int padding, int iw, int ih, Ts... input_layers) : Layer(input_layers...){
+	Conv2d(int kw, int kh, int d, const ActivationFunc* const activation_, int padding, int iw, int ih, Ts... input_layers) : Layer(input_layers...){
 		init(kw, kh, d, activation_, padding, iw, ih);
 	}
 
 	template<typename... Ts>
-	Conv2d(int kw, int kh, int d, const Activation* const activation_, int padding, Ts... input_layers) : Layer(input_layers...){
+	Conv2d(int kw, int kh, int d, const ActivationFunc* const activation_, int padding, Ts... input_layers) : Layer(input_layers...){
 		init(kw, kh, d, activation_, padding, -1, -1);
 	}
 
@@ -42,7 +42,7 @@ public:
 
 private:
 	// initialize layer
-	void init(int kw, int kh, int d, const Activation* const activation_, int padding, int iw, int ih);
+	void init(int kw, int kh, int d, const ActivationFunc* const activation_, int padding, int iw, int ih);
 
 	// performs this layer's computation reading from the input
 	// and writing to the output

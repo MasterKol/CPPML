@@ -48,6 +48,11 @@ void Network::add_input_layer(Input* input_layer){
 }
 
 void Network::compile(Optimizer* optimizer_){
+	// expands all layers in the network if necessary
+	/*for(Layer* l : input_layers){
+		l->expand();
+	}*/
+
 	// Find singular output layer of the network
 	// this works because the network is directed and acyclic
 	// and must have only one node of out-degree 0

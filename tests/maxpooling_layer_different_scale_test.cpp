@@ -4,7 +4,6 @@
 #include <iostream>
 
 #include "../include/shape.hpp"
-#include "../include/activation.hpp"
 
 int main(){
 	setup(new CPPML::MaxPooling2d(2, 3),

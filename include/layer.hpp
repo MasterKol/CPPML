@@ -14,7 +14,7 @@ namespace CPPML {
  * Layer interface, all layers in a network extend this.
  * Layer* can be used for all types of layers.
  */
-class Layer{
+class Layer {
 public:
 	Shape input_shape, output_shape;
 	std::vector<Layer*> inputs, outputs;
@@ -34,7 +34,11 @@ public:
 	// mutex to protect gradients while they are being modified
 	std::mutex gradient_mutex;
 
+	// name of this layer
 	std::string name;
+
+	// is the layer expanded or not?
+	bool expanded;
 
 	template<typename... Ts>
 	Layer(Ts... input_layers){
@@ -44,6 +48,7 @@ public:
 		intermediate_num = 0;
 		intermediate_index = 0;
 		name = "";
+		expanded = false;
 
 		(add_input(input_layers), ...);
 	}
@@ -87,9 +92,16 @@ public:
 	// fills it with initial params. Also stores pointer to
 	// gradients for the layer's parameters
 	virtual void populate(float* params, float* gradients) = 0;
+
+	/// @brief Calls expand_ for this layer and all children.
+	void expand();
 private:
 	// initializer function
 	void init();
+
+	/// @brief Only ever called once
+	/// @return true if expansion occurred, false otherwise
+	virtual bool expand_();
 
 	// collects inputs from the io buffer and writes them into
 	// the provided array input should be at least

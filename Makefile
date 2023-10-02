@@ -17,6 +17,7 @@ image_flatten.o \
 input.o \
 adam.o \
 sgd.o \
+activation_func.o \
 LinearAlgebra.o
 
 OBJECTS = $(addprefix ${BP}/, ${NORMAL})

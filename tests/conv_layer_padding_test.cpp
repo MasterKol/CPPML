@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "../include/shape.hpp"
-#include "../include/activation.hpp"
+#include "../include/activation_func.hpp"
 
 int main(){
 	setup(new CPPML::Conv2d(3, 3, 5, CPPML::LINEAR, 1), 

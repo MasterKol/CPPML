@@ -4,14 +4,14 @@
 #include <cmath>
 #include <iostream>
 
-#include "../activation.hpp"
+#include "../activation_func.hpp"
 #include "../random.hpp"
 #include "../LinearAlgebra.hpp"
 
 namespace CPPML {
 
 void Conv2d::init(int kw_, int kh_, int d_,
-				  const Activation* const activation_,
+				  const ActivationFunc* const activation_,
 				  int padding_, int iw, int ih){
 	assert(kw_ > 0 && kh_ > 0 && d_ > 0 && padding_ >= 0);
 	kw = kw_;

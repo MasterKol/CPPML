@@ -2,7 +2,7 @@
 #define DENSE_LAYER_H
 
 #include "../layer.hpp"
-#include "../activation.hpp"
+#include "../activation_func.hpp"
 
 namespace CPPML {
 
@@ -15,11 +15,11 @@ public:
 	float *weights, *biases;
 	float *weight_grads, *bias_grads;
 	int num_weights, num_biases;
-	const Activation* activation;
-	Dense(int nodes, const Activation* const activation);
+	const ActivationFunc* activation;
+	Dense(int nodes, const ActivationFunc* const activation);
 
 	template<typename... Ts>
-	Dense(int nodes, const Activation* const activation_, Ts... input_layers) : Layer(input_layers...){
+	Dense(int nodes, const ActivationFunc* const activation_, Ts... input_layers) : Layer(input_layers...){
 		init(nodes, activation_);
 	}
 
@@ -33,7 +33,7 @@ public:
 	virtual std::string get_type_name(){return "Dense";}
 private:
 	// initialize layer
-	void init(int nodes, const Activation* const activation);
+	void init(int nodes, const ActivationFunc* const activation);
 
 	// performs this layer's computation reading from the input
 	// and writing to the output

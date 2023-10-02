@@ -3,7 +3,7 @@
 #include <cstring>
 #include <cmath>
 
-#include "../include/activation.hpp"
+#include "../include/activation_func.hpp"
 #include "../include/random.hpp"
 
 const int SIZE = 1000;

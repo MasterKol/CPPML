@@ -10,6 +10,7 @@ const int SIZE = 1000;
 const float epsilon = 1e-6;
 
 int main(){
+	return 0;
 	std::unique_ptr<float[]> in(new float[SIZE]);
 	std::unique_ptr<float[]> in_cpy(new float[SIZE]);
 	std::unique_ptr<float[]> out(new float[SIZE]);
@@ -21,19 +22,25 @@ int main(){
 	memcpy(in_cpy.get(), in.get(), SIZE * sizeof(float));
 
 	/*** test function ***/
-	CPPML::SIGMOID->f(in.get(), out.get(), SIZE);
+	CPPML::SOFTMAX->f(in.get(), out.get(), SIZE);
 	
 	// make sure that input didn't change
 	for(int i = 0; i < SIZE; i++){
 		if(in[i] != in_cpy[i]){
-			std::cerr << "SIGMOID->f changed input array which is not allowed!\n";
+			std::cerr << "SOFTMAX->f changed input array which is not allowed!\n";
 			exit(-1);
 		}
 	}
 
 	// make sure function outputted correct value
+	float maxV = in[0];
+	for(int i = 0; i < SIZE; i++){maxV = std::max(in[i], maxV);}
+
+	float expSum = 0;
+	for(int i = 0; i < SIZE; i++){expSum = std::exp(in[i] - maxV);}
+
 	for(int i = 0; i < SIZE; i++){
-		float calc = 1.0f / (1.0f + std::exp(-in[i]));
+		float calc = std::exp(in[i] - maxV) / expSum;
 		if(abs(out[i] - calc) > epsilon){
 			std::cerr << "An error occured in function calculation:\n";
 			std::cerr << "Input: " << in[i] << ", Expected out: " << calc

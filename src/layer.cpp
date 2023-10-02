@@ -33,6 +33,35 @@ void Layer::compile(int buffer_index, int inter_index){
 	}
 }
 
+void Layer::expand(){
+	if(expanded)
+		return;
+	
+	// try and expand
+	bool didexpand = expand_();
+	expanded = true;
+
+	// recurse to children and expand them
+	for(Layer* l : outputs){
+		l->expand();
+	}
+
+	// expanding outputs is all that is needed if this
+	// layer did not expand
+	if(!didexpand)
+		return;
+
+	// call expand on inputs and expand them if
+	// they are new
+	for(Layer* l : inputs){
+		l->expand();
+	}
+}
+
+bool Layer::expand_(){
+	return false;
+}
+
 void Layer::collect_inputs(float* io_buffer, float* input){
 	for(Layer* l : inputs){ // copy data from each layer
 		// FIXME, add option for choosing only part of input

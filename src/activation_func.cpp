@@ -1,12 +1,15 @@
-#include "activation.hpp"
+#include "activation_func.hpp"
 
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
 
+#include "shape.hpp"
 #include "LinearAlgebra.hpp"
 
 namespace CPPML {
+
+const float epsilon = 1e-10;
 
 /**************** LINEAR ****************/
 void linear_f(const float* input, float* output, int length){

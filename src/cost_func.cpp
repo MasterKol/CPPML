@@ -7,6 +7,8 @@
 
 namespace CPPML {
 
+const float epsilon = 1e-10;
+
 /**************** Mean Squared Error ****************/
 float mse_get_cost(float* x, float* y, int length){
 	// calculate sum((x - y)^2) / x.length
@@ -73,17 +75,17 @@ void huber_get_cost_derv(float* x, float* y, float* out, int length){
 float cross_entropy_get_cost(float* x, float* y, int length){
 	float out = 0;
 	for(int i = 0; i < length; i++){
-		if(x[i] <= 0 || y[i] == 0)
+		if(x[i] <= 0 || y[i] <= 0)
 			continue;
-		out -= y[i] * log(x[i]);
+		out -= y[i] * log(x[i] + epsilon);
 	}
 	return out;
 }
 
 void cross_entropy_get_cost_derv(float* x, float* y, float* out, int length){
-	//vDSP_vsub(y, 1, x, 1, out, 1, length);
-	vDSP_vdiv(x, 1, y, 1, out, 1, length);
-	vDSP_vneg(out, 1, out, 1, length);
+	vDSP_vsadd(x, 1, &epsilon, out, 1, length); // out = x + epsilon
+	vDSP_vdiv(out, 1, y, 1, out, 1, length); // out = y / out
+	vDSP_vneg(out, 1, out, 1, length); // out = -out
 }
 
 }

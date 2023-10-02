@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "../include/shape.hpp"
-#include "../include/activation.hpp"
+#include "../include/activation_func.hpp"
 
 int main(){
 	net = new CPPML::Network(CPPML::MAE);

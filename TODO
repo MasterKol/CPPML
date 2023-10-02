@@ -3,3 +3,4 @@
 * Add tests
 * Add simple NLP
 * Fix Network crashing on compile when no layers are added
+* Switch function headers to use vscode /// style
