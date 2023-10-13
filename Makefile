@@ -29,13 +29,12 @@ all: src/Makefile
 	(cd src && make -q || (make && cd .. && ar -r libcppml.a ${OBJECTS}))
 
 src/Makefile: src/*.* src/*/*.* include/*.* include/*/*.*
-	bash remake.sh
+	./remake.py
 
 clean:
 	rm bin/*.o || true
 	rm src/Makefile || true
-	rm tests/*.tst || true
-	rm -r tests/*.dSYM || true
+	(cd tests && make clean)
 
 test: all
-	./tests/runtests
+	./tests/runtests.py

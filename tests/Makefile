@@ -2,7 +2,7 @@ CC=clang++
 
 TEST_CASES= $(shell echo *.cpp)
 
-TEST_FLAGS=-L/usr/local/opt/libomp/lib -lomp ../libcppml.a -framework Accelerate -std=c++17 -Wall -g
+TEST_FLAGS=-L/usr/local/opt/libomp/lib -I../include -lomp ../libcppml.a -framework Accelerate -std=c++17 -Wall -g
 
 #.PHONY: all
 
@@ -13,5 +13,7 @@ TEST_FLAGS=-L/usr/local/opt/libomp/lib -lomp ../libcppml.a -framework Accelerate
 	${CC} ${TEST_FLAGS} $< -o $@
 
 clean:
-	rm *.tst
-	rm -r *.dSYM
+	rm *.tst || true
+	rm */*.tst || true
+	rm -r *.dSYM || true
+	rm -r */*.dSYM || true
