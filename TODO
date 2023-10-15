@@ -4,3 +4,4 @@
 * Add simple NLP
 * Fix Network crashing on compile when no layers are added
 * Switch function headers to use vscode /// style
+* use VPATH (https://web.mit.edu/gnu/doc/html/make_4.html) to improve Makefiles

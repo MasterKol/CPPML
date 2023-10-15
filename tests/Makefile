@@ -1,19 +1,19 @@
-CC=clang++
+CC:=clang++
 
-TEST_CASES= $(shell echo *.cpp)
+TEST_CASES:=$(shell echo *.cpp)
 
-TEST_FLAGS=-L/usr/local/opt/libomp/lib -I../include -lomp ../libcppml.a -framework Accelerate -std=c++17 -Wall -g
+TEST_FLAGS:=-L/usr/local/opt/libomp/lib -I../include -lomp ../libcppml.a -framework Accelerate -std=c++17 -Wall
 
-#.PHONY: all
+dependencies:=../libcppml.a
 
-#all: $(TEST_CASES:.cpp=.tst)
-#	./runtests
+# for all files
+layer_tests/%.tst: dependencies+=layer_tests/layer_test.hpp
 
-%.tst: %.cpp ../libcppml.a layer_test.hpp
-	${CC} ${TEST_FLAGS} $< -o $@
+%.tst: %.cpp ${dependencies}
+	${CC} ${CXXFLAGS} ${TEST_FLAGS} $< -o $@
+
+%.123:
+	echo ${CXXFLAGS}
 
 clean:
-	rm *.tst || true
-	rm */*.tst || true
-	rm -r *.dSYM || true
-	rm -r */*.dSYM || true
+	./clean.py
