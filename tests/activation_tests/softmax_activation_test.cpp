@@ -3,73 +3,73 @@
 #include <cstring>
 #include <cmath>
 
+#include "Layers/activation.hpp"
+#include "Layers/input.hpp"
 #include "activation_func.hpp"
 #include "random.hpp"
+#include "network.hpp"
+#include "layer.hpp"
+#include "cost_func.hpp"
 
-const int SIZE = 1000;
-const float epsilon = 1e-6;
+const int SIZE = 100;
+
+float h = 1 / 256.0f;
+float epsilon = 1e-2;
+
+float *input, *target, *input_change;
+CPPML::Network* net;
+
+float original_loss = 0;
+
+float getDerv(float*);
 
 int main(){
-	return 0;
-	std::unique_ptr<float[]> in(new float[SIZE]);
-	std::unique_ptr<float[]> in_cpy(new float[SIZE]);
-	std::unique_ptr<float[]> out(new float[SIZE]);
-
 	CPPML::Random::time_seed();
 
-	CPPML::Random::fillGaussian(in.get(), SIZE, 0, 1);
+	net = new CPPML::Network(CPPML::CROSS_ENTROPY);
 
-	memcpy(in_cpy.get(), in.get(), SIZE * sizeof(float));
-
-	/*** test function ***/
-	CPPML::SOFTMAX->f(in.get(), out.get(), SIZE);
+	CPPML::Layer* l = new CPPML::Input(CPPML::Shape(SIZE), net);
+	new CPPML::ActivationLayer(CPPML::SOFTMAX, l);
 	
-	// make sure that input didn't change
+	// make network
+	net->compile(nullptr);
+
+	// initialize memory
+	input = new float[SIZE];
+	target = new float[SIZE];
+	float* out = new float[SIZE];
+	input_change = new float[net->last_io_size];
+
+	// fill input with random values
+	CPPML::Random::fillGaussian(input, SIZE, 0, 1);
+	net->eval(input, out);
+
+	// fill target with random values and softmax it so get x > 0 and sum(X) = 1
+	CPPML::Random::fillGaussian(target, SIZE, 0, 1);
+	CPPML::SOFTMAX->f(target, target, SIZE);
+
+	// compute input_change
+	net->fit_network(input, target, nullptr, nullptr, input_change, &original_loss);
+
+	// find avg error in input derivative
+	float avg = 0;
 	for(int i = 0; i < SIZE; i++){
-		if(in[i] != in_cpy[i]){
-			std::cerr << "SOFTMAX->f changed input array which is not allowed!\n";
-			exit(-1);
+		float calc = out[i] - target[i];
+		float err = 0;
+		if(calc != 0){
+			err = std::abs((calc - input_change[i]) / calc);
+		}else if(input_change[i] != 0){
+			err = input_change[i] * 100000;
 		}
+		avg += err;
+
+		std::cerr << i << ", " << err << ", " << calc << ", " << input_change[i] << "\n";
 	}
+	avg /= SIZE;
 
-	// make sure function outputted correct value
-	float maxV = in[0];
-	for(int i = 0; i < SIZE; i++){maxV = std::max(in[i], maxV);}
-
-	float expSum = 0;
-	for(int i = 0; i < SIZE; i++){expSum = std::exp(in[i] - maxV);}
-
-	for(int i = 0; i < SIZE; i++){
-		float calc = std::exp(in[i] - maxV) / expSum;
-		if(abs(out[i] - calc) > epsilon){
-			std::cerr << "An error occured in function calculation:\n";
-			std::cerr << "Input: " << in[i] << ", Expected out: " << calc
-				<< ", Real out: " << out[i] << "\n";
-			exit(-1);
-		}
-	}
-
-	/*** test function derivative ***/
-	CPPML::SIGMOID->df(in.get(), out.get(), SIZE);
-	
-	// make sure that input didn't change
-	for(int i = 0; i < SIZE; i++){
-		if(in[i] != in_cpy[i]){
-			std::cerr << "SIGMOID->df changed input array which is not allowed!\n";
-			exit(-1);
-		}
-	}
-
-	// make sure function outputted correct value
-	for(int i = 0; i < SIZE; i++){
-		float calc = 1.0f / (1.0f + exp(-in[i]));
-		calc = exp(-in[i]) * calc * calc;
-		if(abs(out[i] - calc) > epsilon){
-			std::cerr << "An error occured in derivative function calculation:\n";
-			std::cerr << "Input: " << in[i] << ", Expected out: " << calc
-				<< ", Real out: " << out[i] << "\n";
-			exit(-1);
-		}
+	std::cerr << "Input derivative avg error = " << avg * 100 << "%\n";
+	if(avg > epsilon || avg < 0 || isnan(avg)){
+		exit(-1);
 	}
 
 	return 0;

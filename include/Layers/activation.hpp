@@ -7,6 +7,7 @@
 namespace CPPML {
 
 class ActivationLayer : public Layer {
+public:
 	const ActivationFunc* act;
 
 	template<typename... Ts>

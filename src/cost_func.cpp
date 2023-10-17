@@ -75,7 +75,7 @@ void huber_get_cost_derv(float* x, float* y, float* out, int length){
 float cross_entropy_get_cost(float* x, float* y, int length){
 	float out = 0;
 	for(int i = 0; i < length; i++){
-		if(x[i] <= 0 || y[i] <= 0)
+		if(x[i] < 0 || y[i] <= 0)
 			continue;
 		out -= y[i] * log(x[i] + epsilon);
 	}

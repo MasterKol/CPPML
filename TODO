@@ -1,7 +1,12 @@
 * Add Batch processing for Batch norm
 * Switch all new / delete to unique / shared pointers
-* Add tests
+* Add deflatten layer tests
+* rename tests to be less redundant
 * Add simple NLP
 * Fix Network crashing on compile when no layers are added
 * Switch function headers to use vscode /// style
 * use VPATH (https://web.mit.edu/gnu/doc/html/make_4.html) to improve Makefiles
+* add vDSP_vaam to linear algebra
+* Add destructors for all classes with memory
+* add tanh activation function
+* add affine layer to compute mx + b where m, b are given

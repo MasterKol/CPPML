@@ -18,9 +18,12 @@ void linear_f(const float* input, float* output, int length){
 	}
 }
 
-void linear_df(const float* input, float* output, int length){
-	const float one = 1;
-	vDSP_vfill(&one, output, 1, length);
+void linear_df(const float* input, float* input_gradients, float* output, float* output_gradients, int length){
+	//const float one = 1;
+	//vDSP_vfill(&one, output, 1, length);
+	if(input_gradients != output_gradients){
+		memcpy(input_gradients, output_gradients, length * sizeof(float));
+	}
 }
 
 /**************** ELU ****************/
@@ -32,12 +35,15 @@ void elu_f(const float* input, float* output, int length){
 	delete[] t;
 }
 
-void elu_df(const float* input, float* output, int length){
+void elu_df(const float* input, float* input_gradients, float* output, float* output_gradients, int length){
 	const float nInif = -__FLT_MAX__; // -infinity
 	const float one = 1.0f; // one
 
 	vvexpf(output, input, &length); // out <- e^in
 	vDSP_vclip(output, 1, &nInif, &one, output, 1, length); // out <- min(out, 1)
+
+	// in_grad = out_grad * Jacobian (out)
+	vDSP_vmul(output, 1, output_gradients, 1, input_gradients, 1, length);
 }
 
 /**************** RELU ****************/
@@ -47,12 +53,15 @@ void relu_f(const float* input, float* output, int length){
 	vDSP_vthres(input, 1, &zero, output, 1, length); // out <- max(out, 0)
 }
 
-void relu_df(const float* input, float* output, int length){
+void relu_df(const float* input, float* input_gradients, float* output, float* output_gradients, int length){
 	const float zero = 0;
 	const float one = 1;
 
 	vDSP_vthrsc(input, 1, &zero, &one, output, 1, length); // out <- sign(in)
 	vDSP_vthres(output, 1, &zero, output, 1, length); // out <- max(out, 0)
+
+	// in_grad = out_grad * Jacobian (out)
+	vDSP_vmul(output, 1, output_gradients, 1, input_gradients, 1, length);
 }
 
 /**************** SIGMOID ****************/
@@ -64,7 +73,7 @@ void sigmoid_f(const float* input, float* output, int length){ // computes 1 / (
 	vvrecf(output, output, &length); // out <- 1/out
 }
 
-void sigmoid_df(const float* input, float* output, int length){ // computes (1 / (1 + e^-x)), x <- t * t - t for all x in d
+void sigmoid_df(const float* input, float* input_gradients, float* output, float* output_gradients, int length){ // computes (1 / (1 + e^-x)), x <- t * t - t for all x in d
 	vDSP_vneg(input, 1, output, 1, length); // out <- -in
 	vvexpf(output, output, &length); // out <- e^out
 	const float one = 1.0;
@@ -73,6 +82,9 @@ void sigmoid_df(const float* input, float* output, int length){ // computes (1 /
 
 	vDSP_vmsb(output, 1, output, 1, output, 1, output, 1, length); // out <- out * out + out
 	vDSP_vneg(output, 1, output, 1, length); // out <- -out
+
+	// in_grad = out_grad * Jacobian (out)
+	vDSP_vmul(output, 1, output_gradients, 1, input_gradients, 1, length);
 }
 
 /**************** SOFTMAX ****************/
@@ -99,17 +111,14 @@ void softmax_f(const float* input, float* output, int length){
 	vDSP_vsdiv(output, 1, &total, output, 1, length);
 }
 
-void softmax_df(const float* input, float* output, int length){
-	float dt;
-	// dt = out . in
-	vDSP_dotpr(output, 1, input, 1, &dt, length);
+// switch to using output not input for grad
+void softmax_df(const float* input, float* input_gradients, float* output, float* output_gradients, int length){
+	float dt; // dot product of output and gradient of outputs
+	vDSP_dotpr(output_gradients, 1, output, 1, &dt, length); // calc. dot product
+	dt = -dt; // negate dot product
 	
-	// out -= dt
-	dt = -dt;
-	vDSP_vsadd(input, 1, &dt, output, 1, length);
-	
-	// out = in .* out
-	vDSP_vmul(input, 1, output, 1, output, 1, length);
+	// calculate (out_grads + dt) * (output + epsilon) -> input_grads
+	vDSP_vaam(output_gradients, 1, &dt, 0, output, 1, &epsilon, 0, input_gradients, 1, length);
 }
 
 }

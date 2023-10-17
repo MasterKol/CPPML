@@ -40,10 +40,6 @@ def runSingleTest(test):
 		test = test[:-3] + "tst"
 	else:
 		print("Test " + test + " does not exist")
-		os.exit(1)
-
-	# try and rebuild library if necessary
-	if subprocess.call('cd ..; make', shell=True) != 0:
 		exit(1)
 
 	# try compiling test
@@ -61,7 +57,7 @@ def runSingleTest(test):
 		printProc(process)
 
 		printRed("\nFailed Test " + test)
-		os.exit(1) # exit with code 1 to indicate failure
+		exit(1) # exit with code 1 to indicate failure
 
 # run all tests in the same folder and sub-folders of this program
 def runAllTests():
@@ -74,6 +70,10 @@ def runAllTests():
 # no files specified, run all tests
 if len(tests) == 0:
 	tests.add('.')
+
+# try and rebuild library if necessary
+if subprocess.call('cd ..; make', shell=True) != 0:
+	exit(1)
 
 # some tests were specified, try to run them
 for arg in tests:

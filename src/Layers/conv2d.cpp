@@ -234,11 +234,8 @@ void Conv2d::add_grads(float* input, float* out_change){
 
 void Conv2d::get_change_grads(float* out_change, float* inpt_change,
 					float* input, float* output, float* intermediate){
-	// apply derivative of activation function to intermediate
-	activation->df(intermediate, intermediate, output_shape.size());
-	
-	// multiply intermediate by change from previous layer
-	vDSP_vmul(intermediate, 1, out_change, 1, out_change, 1, output_shape.size());
+	// out_change <- activation'(intermediate) * out_change
+	activation->df(intermediate, out_change, output, out_change, input_shape.size());
 
 	const int pkw = kw - 1 - padding; // padding to add
 	const int pkh = kh - 1 - padding;

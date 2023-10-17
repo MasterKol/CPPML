@@ -13,12 +13,16 @@ int main(){
 	std::unique_ptr<float[]> in(new float[SIZE]);
 	std::unique_ptr<float[]> in_cpy(new float[SIZE]);
 	std::unique_ptr<float[]> out(new float[SIZE]);
+	std::unique_ptr<float[]> grad(new float[SIZE]);
+	std::unique_ptr<float[]> out_buff(new float[SIZE]);
 
 	CPPML::Random::time_seed();
 
 	CPPML::Random::fillGaussian(in.get(), SIZE, 0, 1);
 
 	memcpy(in_cpy.get(), in.get(), SIZE * sizeof(float));
+
+	for(int i = 0; i < SIZE; i++) grad[i] = 1;
 
 	/*** test function ***/
 	CPPML::RELU->f(in.get(), out.get(), SIZE);
@@ -46,7 +50,7 @@ int main(){
 	}
 
 	/*** test function derivative ***/
-	CPPML::RELU->df(in.get(), out.get(), nullptr, SIZE);
+	CPPML::RELU->df(in.get(), out.get(), out_buff.get(), grad.get(), SIZE);
 	
 	// make sure that input didn't change
 	for(int i = 0; i < SIZE; i++){

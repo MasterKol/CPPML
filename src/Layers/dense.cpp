@@ -73,11 +73,9 @@ void Dense::get_change_grads(float* out_change, float* inpt_change, float* input
 	// apply derivative of activation function to the values that
 	// came out of this layer before they were passed through the
 	// activation function
-	// intermediate <- activation'(intermediate)
-	activation->df(intermediate, intermediate, output_shape.size());
 
-	// out_change <- intermediate * out_change
-	vDSP_vmul(intermediate, 1, out_change, 1, out_change, 1, output_shape.size());
+	// out_change <- activation'(intermediate) * out_change
+	activation->df(intermediate, out_change, output, out_change, output_shape.size());
 
 	// calculate input change from output change
 	// input_change^T <- out_change^T * weights

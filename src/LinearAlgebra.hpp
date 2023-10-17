@@ -129,8 +129,10 @@
 	void vDSP_vma(const float *A, int AStride, const float *B, int BStride, const float *C, int CStride, float *D, int DStride, int N);
 	// Subtracts the product of two single-precision vectors from a second product of two single-precision vectors.
 	void vDSP_vmmsb(const float *A, int AStride, const float *B, int BStride, const float *C, int CStride, const float *D, int DStride, float *E, int EStride, int N);
+	// Multiplies the sum of two single-precision vectors by a second sum of two single-precision vectors. (A + B) * (C * D) -> E
+	void vDSP_vaam(const float *A, int AStride, const float *B, int BStride, const float *C, int CStride, const float *D, int DStride, float *E, int EStride, int N);
 
-	}
+	} // namespace CPPML
 #endif
 
 

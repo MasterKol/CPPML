@@ -2,11 +2,11 @@
 #include <cmath>
 #include <iostream>
 
-#include "../include/random.hpp"
-#include "../include/network.hpp"
-#include "../include/layer.hpp"
-#include "../include/Layers/input.hpp"
-#include "../include/cost_func.hpp"
+#include "random.hpp"
+#include "network.hpp"
+#include "layer.hpp"
+#include "Layers/input.hpp"
+#include "cost_func.hpp"
 
 int input_length, output_length;
 
@@ -60,14 +60,16 @@ void checkParameterGradients(){
 	}
 	avg /= net->num_params;
 
-	//std::cerr << "Var: " << var << "\n";
-	//std::cerr << "T: " << avg / var / std::sqrt(net->num_params) << "\n";
 	std::cerr << "Parameter derivative average error = " << avg * 100 << "%\n";
 	if(avg > epsilon || avg < 0 || isnan(avg)){
 		exit(-1);
 	}
 }
 
+/// @brief evaluates network with given value changed by some amount
+/// @param toChange pointer to value to change
+/// @param dx amount to change value by
+/// @return cost of the network with given value changed
 float eval(float* toChange, float dx){
 	float t = *toChange;
 	(*toChange) += dx;
@@ -88,18 +90,6 @@ float getDerv(float* toChange){
 
 	return (costph + costmh + cost2ph + cost2mh) / (12 * h);
 }
-
-/*
-float getDerv(float* toChange){
-	float t = *toChange;
-	(*toChange) += h;
-	float new_loss = 0;
-	net->fit_network(input, target, 1, &new_loss);
-	*toChange = t;
-
-	return (new_loss - original_loss) / h;
-}
-*/
 
 /// @brief Sets up net for a single layer to be tested
 /// @param layer layer to be tested, will be added to a network

@@ -346,6 +346,18 @@ void vDSP_vmmsb(const float *A, int AStride, const float *B, int BStride, const 
 	}
 }
 
+void vDSP_vaam(const float *A, int AStride, const float *B, int BStride, const float *C, int CStride, const float *D, int DStride, float *E, int EStride, int N){
+	for(int i = 0; i < N; i++){
+		*E = ((*A) + (*B)) * ((*C) + (*D));
+
+		A += AStride;
+		B += BStride;
+		C += CStride;
+		D += DStride;
+		E += EStride;
+	}
 }
+
+} // namespace CPPML
 
 #endif
