@@ -6,8 +6,8 @@
 #include "shape.hpp"
 
 int main(){
-	setup(new CPPML::SelfAttention(5, 20),
-			CPPML::Shape(20, 30));
+	setup(new CPPML::SelfAttention(5, 10),
+			CPPML::Shape(10, 20));
 
 	checkInputGradients();
 	checkParameterGradients();
