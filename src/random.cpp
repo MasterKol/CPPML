@@ -49,7 +49,7 @@ void Random::rand_seed(int seed){
 
 int Random::time_seed(){
 	using namespace std::chrono;
-	int ms = duration_cast< milliseconds >(
+	int ms = duration_cast< nanoseconds >(
 		steady_clock::now().time_since_epoch()
 	).count();
 	rng = std::mt19937(ms);

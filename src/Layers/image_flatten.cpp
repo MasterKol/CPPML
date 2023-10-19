@@ -181,6 +181,8 @@ void ImageDeFlatten::init(int xPatchSize_, int yPatchSize_, int imgw, int imgh, 
 void ImageDeFlatten::populate(float* params, float* gradients){}
 
 bool ImageDeFlatten::compile_(){
+	assert(inputs.size() == 1 && "DeFlatten layer must have exactly 1 input");
+
 	input_shape.d(inputs[0]->output_shape.d());
 
 	output_shape.d(input_shape.d());
