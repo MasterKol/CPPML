@@ -50,7 +50,6 @@ public:
 	std::vector<Input*> input_layers;
 	std::vector<Layer*> layers;
 	Layer* output_layer;
-
 	std::string net_name;
 
 	int num_layers;
@@ -60,35 +59,50 @@ public:
 	// values, only needed for training
 	int intermediate_size;
 
-	int input_length, output_length;
+	// total length of network input
+	int input_length;
+	// length of network output
+	int output_length;
 
-	int num_params; // total parameters across all layers
+	// total number of parameters in the network
+	int num_params;
+	// all network parameters
 	float* params;
 
+	// gradient of network parameters
 	float* gradients;
 
-	//float *lio, *inter, *change;
-
+	// number of examples that the net has been trained on
+	// since the last call to apply_gradients()
 	std::atomic_int num_examples{0};
 
-	Network(const Cost_func* const cost_func_, std::string name="model");
+	/// @brief Create new network
+	/// @param cost_func Cost function used for network evaluation
+	/// @param name Name of the model
+	Network(const Cost_func* const cost_func, std::string name="model");
 
 	// adds a layer to the network that is used for input
 	// these layers should have no inputs themselves
+	
+	/// @brief adds a layer to the network that is used for input
+	/// @param input_layer Layer to add as input
 	void add_input_layer(Input* input_layer);
 
 	// Uses the layers that were added and finalizes them.
 	// Does all of the setup needed to get the network working
 	// including telling all layers to initialize themselves with
 	// random parameters
-	void compile(Optimizer* optimizer_);
 
-	// Writes network output to out pointer, reads
-	// data from subsequent args. If only one arg
-	// is provided all data is read from there, otherwise
-	// one pointer is required for each input layer and
-	// should be provided in the same order as input layers
-	// were added to this network.
+	/// @brief Sets up the network, layers, and optimizer.
+	///		   To be called only after all layers have been added.
+	/// @param optimizer optimizer to use during network training
+	void compile(Optimizer* optimizer);
+
+	/// @brief Evaluates the network on the given input. For multi-input networks the input
+	///		   should be concatenated in the order that the input layers were added.
+	/// @param input Input to the network
+	/// @param output Place to write network output
+	/// @param lio *optional* memory where network intermediates are stored (size=last_io_size)
 	void eval(float* input, float* output, float* lio=nullptr);
 
 	// examples: array of examples with length = num * input  size
@@ -96,37 +110,49 @@ public:
 	// num: the number of training examples in the given arrays
 	// calls fit_network(float*, float*) for each training example
 	// in its own thread to speed up training
+
+	/// @brief Fits the network on the given values, runs in parallel
+	/// @param examples pointers to input examples
+	/// @param targets pointers to target for given examples
+	/// @param num number of examples given
 	void fit_network(float** examples, float** targets, int num);
-	
-	// calls fit_network with pointers to the start of
-	// examples and targets as if they were float**s
+
+	/// @brief  Fits the network on the given values, runs in parallel
+	/// @param examples pointer to array of input examples
+	/// @param targets pointer to array of targets for given examples
+	/// @param num number of examples given
+	/// @param loss optionally compute the sum training loss of the network on the provided examples
 	void fit_network(float* examples, float* targets, int num, float* loss=nullptr);
 
-	// Takes in a network input and a desired output and adds the
-	// gradients for that example to the network. Thread safe
+	/// @brief Fit the network on a single training example, thread safe
+	/// @param example pointer to example to train on
+	/// @param target pointer to target value for given example
+	/// @param lio *optional* memory where network intermediates are stored (size=last_io_size)
+	/// @param inter *optional* memory where network intermediates are stored (size=intermediate_size)
+	/// @param change *optional* memory where network layer gradients are stored (size=last_io_size)
+	/// @param loss *optional* loss for this training example
 	void fit_network(float* example, float* target, float* lio=nullptr, float* inter=nullptr, float* change=nullptr, float* loss=nullptr);
 
-	// applies gradients from previous training.
-	// zeroes gradients and resets num_examples when done
+	/// @brief Applies gradients from previous training. Zeroes gradients and resets num_examples when done.
 	void apply_gradients();
 
-	// prints a summary of the current network
-	// only works after net is compiled
+	/// @brief Prints a summary of the current network, only works after net is compiled.
 	void print_summary();
 
-	// writes model weights to designated file
+	/// @brief Saves model weights to designated file
+	/// @param file_name path to file to write to
+	/// @return Returns error code if failure
 	Err save(std::string file_name);
 
-	// reads model weights from designated file
+	/// @brief Loads model weights from designated file
+	/// @param file_name path to file to read from
+	/// @return Returns error code if failure
 	Err load(std::string file_name);
 private:
 	// This runs basically dfs topological sort on the nodes
 	// in the network so that each one will only rely on
 	// nodes that will have previously been processed
 	void order_layers();
-
-	// fits network in a separate thread
-	void fit_network_thread(std::atomic_int* i, float** examples, float** targets);
 };
 
 }

@@ -3,10 +3,24 @@
 
 namespace CPPML {
 
-typedef struct t_cost {
-	float (*get_cost)(float* x, float* y, int length); // returns the cost between x and y
+/*
+ * Defines a cost function used for determining the error
+ * between predicted and ground truth values.
+ */
+struct Cost_func {
+	/// @brief gets the cost between x and y
+	/// @param x array of predictions
+	/// @param y array of ground truth values
+	/// @param length length of x and y
+	float (*get_cost)(float* x, float* y, int length);
+	
+	/// @brief gets the derivative of the cost between x and y
+	/// @param x array of predictions
+	/// @param y array of ground truth values
+	/// @param out place to write derivatives
+	/// @param length length of x, y, and out
 	void (*get_cost_derv)(float* x, float* y, float* out, int length); // places the cost derivative of x and y in out
-} Cost_func;
+};
 
 /**************** Mean Squared Error ****************/
 float mse_get_cost(float* x, float* y, int length);

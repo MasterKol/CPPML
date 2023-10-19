@@ -24,6 +24,7 @@ public:
 	// this optimizer's policy
 	virtual void update_params() = 0;
 
+private:
 	// initialize optimizer (allocate buffers, etc.)
 	// net will have already been set
 	virtual void compile_() = 0;

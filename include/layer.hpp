@@ -40,6 +40,8 @@ public:
 	// is the layer expanded or not?
 	bool expanded;
 
+	/// @brief 
+	/// @param input_layers vararg adds given Layer*'s as inputs to this layer
 	template<typename... Ts>
 	Layer(Ts... input_layers){
 		num_params = 0;
@@ -53,16 +55,16 @@ public:
 		(add_input(input_layers), ...);
 	}
 
-	// set name of layer
-	Layer* set_name(std::string name_){ name = name_; return this; }
+	/// @brief Set network name
+	/// @param name new name of the layer
+	/// @return pointer to self
+	Layer* set_name(std::string name);
 
-	// returns the name of this layer type
-	// wish there was a better way to do this
-	// but there isn't as far as I know
+	/// @brief returns the name of this layer type
 	virtual std::string get_type_name() = 0;
 
-	// adds given layer as an output to this layer
-	// e.g. secondLayer.add_input(firstLayer)
+	/// @brief adds given layer as new input
+	/// @param layer layer to add
 	void add_input(Layer* layer);
 
 	// returns the layer that represents the output
@@ -74,31 +76,44 @@ public:
 	// for this layer to read and write from. If there are
 	// multiple inputs it collects them together into
 	// temporary memory
+
+	/// @brief computes output of layer, pulls from input layers' input
+	///		   locations in io_buffer and writes output to output_index
+	/// @param io_buffer contains outputs of all layers in the network, in order
+	/// @param intermediate_buffer contains intermediate values used only for training, null during inference
 	void process(float* io_buffer, float* intermediate_buffer=nullptr);
 
-	// calls compile_ for each layer which sets up the layer
-	// given its inputs, this redirect just does boilerplate
-	// calculations
+	/// @brief Compiles layer, does basic setup before calling layer specific compile_
+	/// @param buffer_index index in io_buffer that outputs should be written to
+	/// @param inter_index index in intermediate_buffer that intermediates should be written
 	void compile(int buffer_index, int inter_index);
 
 	// sets up inputs for get_change and add_gradients, collects
 	// input and output changes, inputs and outputs, and sets 
 	// offset for intermediate buffer finally writes output changes 
 	// to their proper place in the change buffer
+
+	/// @brief propagates gradients backwards through the layer, at the
+	///		   same time calculates gradients of this layers parameters
+	/// @param change_buffer buffer where all network gradients are stored
+	/// @param io_buffer buffer where all layer input and outputs are stored
+	/// @param intermediate_buffer buffer where intermediate values needed by layer is stored
 	void backpropagate(float* change_buffer, float* io_buffer,
 					   float* intermediate_buffer);
 
 	// gets pointer to parameter memory from network and
 	// fills it with initial params. Also stores pointer to
 	// gradients for the layer's parameters
+
+	/// @brief Assigns layer is parameter and gradient memory and,
+	///		   tells layer to initialize this memory
+	/// @param params memory where this layers parameters are to be stored
+	/// @param gradients memory where this layers parameter gradients are to be stored
 	virtual void populate(float* params, float* gradients) = 0;
 
 	/// @brief Calls expand_ for this layer and all children.
 	void expand();
 private:
-	// initializer function
-	void init();
-
 	/// @brief Only ever called once
 	/// @return true if expansion occurred, false otherwise
 	virtual bool expand_();
@@ -106,16 +121,26 @@ private:
 	// collects inputs from the io buffer and writes them into
 	// the provided array input should be at least
 	// input_shape.size * sizeof(float) bytes long
+
+	/// @brief collects inputs from the io buffer and writes them into the provided array
+	/// @param io_buffer buffer storing all network layer io
+	/// @param input array where layer inputs are written (size=input_shape.size())
 	void collect_inputs(float* io_buffer, float* input);
 
-	// performs this layer's computation reading from the input
-	// and writing to the output
+	/// @brief performs this layer's computation reading from the input and writing to the output
+	/// @param input input into the layer, contiguous
+	/// @param output location to write layer output to
+	/// @param intermediate_buffer location to write intermediate values (may be nullptr)
 	virtual void compute(float* input, float* output, 
 						 float* intermediate_buffer) = 0;
 
 	// sets up a layer given its inputs are already
 	// compiled, only need to set i/o size and intermediate_num
 	// returns true if layer is an input layer, false otherwise
+
+	/// @brief sets up a layer given its inputs are already compiled,
+	///		   only need to set i/o size and intermediate_num
+	/// @return true if layer is an input layer, false otherwise
 	virtual bool compile_() = 0;
 
 	// takes in previous layer's change and calculates the change
@@ -124,6 +149,14 @@ private:
 	// output, out_change, and intermediate can be changed because 
 	// they will not be used downstream. Also calculates gradients
 	// for this layer's params and adds them to its gradient buffer
+
+	/// @brief takes in previous layer's change and calculates the change of its inputs
+	///		   and the gradients of the layers parameters
+	/// @param out_change derivative of output values (mutable)
+	/// @param inpt_change derivative of input values, WRITE to this array
+	/// @param input input to this layer
+	/// @param output previous output of this layer (mutable)
+	/// @param intermediate intermediate values saved during compute (mutable)
 	virtual void get_change_grads(float* out_change, float* inpt_change,
 				  float* input, float* output, float* intermediate) = 0;
 };

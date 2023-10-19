@@ -21,9 +21,16 @@ private:
 public:
 	float learning_rate;
 	
-	Adam(float learning_rate_=0.001f, float beta1_=0.9f,
-			float beta2_=0.999f, float epsilon_=1E-7);
+	/// @brief Adam optimizer, most params should be left at default unless you
+	///		   know what you are doing.
+	/// @param learning_rate 
+	/// @param beta1 
+	/// @param beta2 
+	/// @param epsilon 
+	Adam(float learning_rate=0.001f, float beta1=0.9f,
+			float beta2=0.999f, float epsilon=1E-7);
 	virtual void update_params();
+private:
 	virtual void compile_();
 };
 

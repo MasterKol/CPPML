@@ -49,9 +49,9 @@ void Network::add_input_layer(Input* input_layer){
 
 void Network::compile(Optimizer* optimizer_){
 	// expands all layers in the network if necessary
-	/*for(Layer* l : input_layers){
+	for(Layer* l : input_layers){
 		l->expand();
-	}*/
+	}
 
 	// Find singular output layer of the network
 	// this works because the network is directed and acyclic
@@ -190,14 +190,6 @@ void Network::eval(float* input, float* output, float* lio_){
 
 	if(lio_ == nullptr){
 		delete[] lio;
-	}
-}
-
-void Network::fit_network_thread(std::atomic_int* i, float** examples, float** targets){
-	int en = i->fetch_sub(1);
-	while(en >= 0){
-		fit_network(examples[en], targets[en]);
-		en = i->fetch_sub(1);
 	}
 }
 

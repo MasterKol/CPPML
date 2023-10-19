@@ -13,9 +13,12 @@ class SGD : public Optimizer {
 public:
 	float learning_rate;
 	
-	SGD(float learning_rate_=0.01f);
+	/// @brief 
+	/// @param learning_rate 
+	SGD(float learning_rate=0.01f);
 
 	virtual void update_params();
+private:
 	virtual void compile_();
 };
 

@@ -7,6 +7,10 @@
 
 namespace CPPML {
 
+/*
+ * Defines an arbitrary function that can be used as an activation function
+ * or simply as a transformation such as mx+b
+ */
 struct ActivationFunc {
 	/// @brief evaluate activation function
 	/// @param input input value to the function

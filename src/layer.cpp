@@ -20,6 +20,11 @@ Layer* Layer::get_output(){
 	return this;
 }
 
+Layer* Layer::set_name(std::string name_){
+	name = name_;
+	return this;
+}
+
 void Layer::compile(int buffer_index, int inter_index){
 	output_index = buffer_index;
 	intermediate_index = inter_index;

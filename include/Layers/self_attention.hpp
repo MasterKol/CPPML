@@ -7,7 +7,8 @@ namespace CPPML {
 
 /*
  * Implements the self attention mechanism
- * Output dims match input dims
+ * Output dims match input dims by default,
+ * output width can be changed.
  */
 class SelfAttention : public Layer {
 public:
@@ -24,6 +25,11 @@ public:
 	// (output_shape.w, num_heads * internal_size)
 	float *z_grads;
 
+	/// @param num_heads_ number of attention heads
+	/// @param internal_size_ feature embed size, smaller is faster but less expressive
+	/// @param output_width width of the output, height is the same as input
+	/// @param input_width width to cast inputs to, original shapes are ignored
+	/// @param input_layers vararg, inputs to this layer, all widths should match
 	template<typename... Ts>
 	SelfAttention(int num_heads_, int internal_size_, int output_width, int input_width, Ts... input_layers) : Layer(input_layers...){
 		num_heads = num_heads_;
@@ -32,6 +38,10 @@ public:
 		input_shape.w(input_width);
 	}
 
+	/// @param num_heads_ number of attention heads
+	/// @param internal_size_ feature embed size, smaller is faster but less expressive
+	/// @param output_width width of the output, height is the same as input
+	/// @param input_layers vararg, inputs to this layer, all widths should match
 	template<typename... Ts>
 	SelfAttention(int num_heads_, int internal_size_, int output_width, Ts... input_layers) : Layer(input_layers...){
 		num_heads = num_heads_;
@@ -39,6 +49,9 @@ public:
 		output_shape.w(output_width);
 	}
 
+	/// @param num_heads_ number of attention heads
+	/// @param internal_size_ feature embed size, smaller is faster but less expressive
+	/// @param input_layers vararg, inputs to this layer, all widths should match
 	template<typename... Ts>
 	SelfAttention(int num_heads_, int internal_size_, Ts... input_layers) : Layer(input_layers...){
 		num_heads = num_heads_;
@@ -46,31 +59,13 @@ public:
 		output_shape.w(-1);
 	}
 
-	// gets pointer to parameter memory from
-	// network and fills it with initial params
 	virtual void populate(float* params, float* gradients);
-
-	// returns the name of this layer type
-	// wish there was a better way to do this
-	// but there isn't as far as I know
 	virtual std::string get_type_name(){return "SelfAttention";}
-	
 private:
-
-	// performs this layer's computation reading from the input
-	// and writing to the output
 	virtual void compute(float* input, float* output, float* intermediate_buffer);
 
-	// sets up a layer given its inputs are already
-	// compiled, only need to set i/o size and intermediate_num
-	// returns true if layer is an input layer
 	virtual bool compile_();
 
-	// takes in previous layer's change and calculates the change
-	// of its inputs, WRITE TO inpt_change. inpt_change will always
-	// be a copy so just write to it, adding is done externally
-	// output, out_change, and intermediate can be changed because 
-	// they will not be used downstream
 	virtual void get_change_grads(float* out_change, float* inpt_change,
 				  float* input, float* output, float* intermediate);
 

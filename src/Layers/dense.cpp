@@ -9,15 +9,6 @@
 
 namespace CPPML {
 
-Dense::Dense(int nodes, const ActivationFunc* const activation_) : Layer() {
-	init(nodes, activation_);
-}
-
-void Dense::init(int nodes, const ActivationFunc* const activation_){
-	output_shape = Shape(nodes);
-	activation = activation_;
-}
-
 bool Dense::compile_(){
 	// this layer performs automatic flattening of inputs
 	// add up input sizes of all input layers
@@ -66,7 +57,8 @@ void Dense::compute(float* input, float* output, float* inter_ptr){
 
 	// apply activation function with intermediate as
 	// input and output as output to move data if necessary
-	activation->f(inter_ptr, output, output_shape.size());
+	if(activation)
+		activation->f(inter_ptr, output, output_shape.size());
 }
 
 void Dense::get_change_grads(float* out_change, float* inpt_change, float* input, float* output, float* intermediate){
@@ -75,7 +67,8 @@ void Dense::get_change_grads(float* out_change, float* inpt_change, float* input
 	// activation function
 
 	// out_change <- activation'(intermediate) * out_change
-	activation->df(intermediate, out_change, output, out_change, output_shape.size());
+	if(activation)
+		activation->df(intermediate, out_change, output, out_change, output_shape.size());
 
 	// calculate input change from output change
 	// input_change^T <- out_change^T * weights

@@ -31,12 +31,15 @@ public:
 	// (w, h, d, n)
 	std::string to_string();
 
-	// prints the given data formatted for this shape
-	// optionally accepts format specifier for changing output
+	/// @brief prints an array formatted for this shape
+	/// @param data data to print
+	/// @param frmt *optional* format string specifying float print format
 	void printd(float* data, std::string frmt="% .3f");
 
-	// prints the given data formatted for this shape
-	// optionally accepts format specifier for changing output
+	/// @brief prints an array formatted for this shape
+	/// @param txt prefix text
+	/// @param data data to print
+	/// @param frmt *optional* format string specifying float print format
 	void printd(std::string txt, float* data, std::string frmt="% .3f");
 
 	int w() const { return w_; }
