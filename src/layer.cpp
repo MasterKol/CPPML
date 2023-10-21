@@ -106,6 +106,17 @@ void Layer::process(float* io_buffer, float* intermediate_buffer){
 	delete[] input;
 }
 
+void Layer::process_train(float* io_buffers, int buffer_len, int num, float* intermediate_buffers, int inter_buffer_len){
+	if(is_batch_processing){
+		#pragma omp parallel for
+		for(int i = 0; i < num; i++){
+			process(io_buffers + i * buffer_len, intermediate_buffers + i * inter_buffer_len);
+		}
+	}else{
+
+	}
+}
+
 void Layer::backpropagate(float* change_buffer, float* io_buffer, float* intermediate_buffer){
 	// nowhere to push back to, simply return
 	if(input_shape.size() <= 0){
@@ -154,4 +165,4 @@ void Layer::backpropagate(float* change_buffer, float* io_buffer, float* interme
 	}
 }
 
-}
+} // namespace CPPML

@@ -28,18 +28,24 @@ public:
 
 	// index in intermediate buffer
 	int intermediate_index;
+
 	// index of start of outputs in output buffer
 	int output_index;
-
-	// mutex to protect gradients while they are being modified
-	std::mutex gradient_mutex;
 
 	// name of this layer
 	std::string name;
 
+protected:
+	// mutex to protect gradients while they are being modified
+	std::mutex gradient_mutex;
+
 	// is the layer expanded or not?
 	bool expanded;
 
+	// true if a layer wants to use batch processing
+	bool is_batch_processing;
+
+public:
 	/// @brief 
 	/// @param input_layers vararg adds given Layer*'s as inputs to this layer
 	template<typename... Ts>
@@ -51,6 +57,7 @@ public:
 		intermediate_index = 0;
 		name = "";
 		expanded = false;
+		is_batch_processing = false;
 
 		(add_input(input_layers), ...);
 	}
@@ -83,6 +90,10 @@ public:
 	/// @param intermediate_buffer contains intermediate values used only for training, null during inference
 	void process(float* io_buffer, float* intermediate_buffer=nullptr);
 
+	// can be over written to implement batch processing unique to a layer, only for use at training time
+
+	void process_train(float* io_buffers, int buffer_len, int num, float* intermediate_buffers, int inter_buffer_len);
+
 	/// @brief Compiles layer, does basic setup before calling layer specific compile_
 	/// @param buffer_index index in io_buffer that outputs should be written to
 	/// @param inter_index index in intermediate_buffer that intermediates should be written
@@ -90,7 +101,7 @@ public:
 
 	// sets up inputs for get_change and add_gradients, collects
 	// input and output changes, inputs and outputs, and sets 
-	// offset for intermediate buffer finally writes output changes 
+	// offset for intermediate buffer finally writes output changes
 	// to their proper place in the change buffer
 
 	/// @brief propagates gradients backwards through the layer, at the
@@ -133,6 +144,8 @@ private:
 	/// @param intermediate_buffer location to write intermediate values (may be nullptr)
 	virtual void compute(float* input, float* output, 
 						 float* intermediate_buffer) = 0;
+
+	virtual void batch_compute(float* inputs, float* outputs, float* intermediate_buffers);
 
 	// sets up a layer given its inputs are already
 	// compiled, only need to set i/o size and intermediate_num
