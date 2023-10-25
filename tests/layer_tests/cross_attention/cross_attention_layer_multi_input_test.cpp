@@ -5,10 +5,8 @@
 
 #include "shape.hpp"
 
-int main(){
-	epsilon = 2e-2;
-	
-	net = new CPPML::Network(CPPML::MAE);
+int main(){	
+	net = new CPPML::Network(CPPML::MSE);
 	// Q inputs
 	CPPML::Input* q1 = new CPPML::Input(CPPML::Shape(10, 20), net);
 	CPPML::Input* q2 = new CPPML::Input(CPPML::Shape(10, 20), net);
