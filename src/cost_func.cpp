@@ -27,12 +27,11 @@ void mse_get_cost_derv(float* x, float* y, float* out, int length){
 float mae_get_cost(float* x, float* y, int length){
 	std::unique_ptr<float[]> t(new float[length]);
 	vDSP_vsub(y, 1, x, 1, t.get(), 1, length); // t = x - y
-	float absum;
-	vDSP_svemg(t.get(), 1, &absum, length);	// absum = sum(|t|)
-	//float absum = cblas_sasum(length, x, 1);
-	//vDSP_vadd(y, 1, x, 1, x, 1, length);
+	vvfabsf(t.get(), t.get(), &length); // t = |t|
 
-	return absum / length;
+	float absum = 0;
+	vDSP_sve(t.get(), 1, &absum, length); // absum = sum(t)
+	return absum / (float)length;
 }
 
 void mae_get_cost_derv(float* x, float* y, float* out, int length){

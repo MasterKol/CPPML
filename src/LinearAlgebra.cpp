@@ -226,11 +226,9 @@ void vvexpm1f(float* out, const float* in, const int* N){
 	}
 }
 
-void vDSP_svemg(const float* in, int InStride, float* out, int N){
-	*out = 0;
-	for(int i = 0; i < N; i++){
-		*out += abs(*in);
-		in += InStride;
+void vvfabsf(float *out, const float *in, const int *N){
+	for(int i = 0; i < *N; i++){
+		out[i] = abs(in[i]);
 	}
 }
 

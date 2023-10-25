@@ -107,8 +107,8 @@
 	void vDSP_vmul(const float* A, int Astride, const float* B, int Bstride, float* out, int OutStride, int N);
 	// Calculates e^x-1 for each element in an array of single-precision values. (out = (e^in) - 1)
 	void vvexpm1f(float* out, const float* in, const int* N);
-	// Calculates the sum of magnitudes in a single-precision vector (out = sum(abs(in)))
-	void vDSP_svemg(const float* in, int InStride, float* out, int N);
+	// Calculates the absolute value of all elements in an array (out = |in|)
+	void vvfabsf(float *out, const float *in, const int *N);
 	// Divides two single-precision vectors.
 	void vDSP_vdiv(const float* B, int Bstride, const float* A, int Astride, float* out, int OutStride, int N);
 	// Computes the matrix operation out = A * B, matricies are of sizes (row, colum) out = (M, N), A = (M, P), B = (P, N)
