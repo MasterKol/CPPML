@@ -23,14 +23,10 @@ def printGreen(txt):
 def printRed(txt):
 	print('\033[0;31m' + str(txt) + '\033[0m')
 
-def printProc(proc):
-	data = proc.communicate()
-	out = data[0].decode()
-	err = data[1].decode()
-
-	print(('\n' if len(out) > 0 else '') + out, end='')
-	print('\n' if (len(out) > 0 or len(err) > 0) else '', end='')
-	print(err + ('\n' if len(err) > 0 else ''), end='')
+def printProc(out, err):
+	print(('\n' if len(err) > 0 else '') + err, end='')
+	print('\n' if (len(err) > 0 or len(out) > 0) else '', end='')
+	print(out + ('\n' if len(out) > 0 else ''), end='')
 
 # run test at specified location
 def runSingleTest(test):
@@ -47,14 +43,22 @@ def runSingleTest(test):
 		exit(1)
 	
 	# call test
+	print(test)
 	process = subprocess.Popen("./" + test, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-	process.wait()
+	
+	# continuously read err and out to stop process blocking
+	err=""
+	out=""
+	while process.poll() == None:
+		data = process.communicate()
+		out += data[0].decode()
+		err += data[1].decode()
 
 	if process.returncode == 0: # success
-		if verbose: printProc(process)
+		if verbose: printProc(out, err)
 		printGreen("Passed " + test)
 	else: #failure
-		printProc(process)
+		printProc(out, err)
 
 		printRed("\nFailed Test " + test)
 		exit(1) # exit with code 1 to indicate failure
