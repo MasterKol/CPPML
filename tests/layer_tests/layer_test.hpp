@@ -13,7 +13,7 @@ int input_length, output_length;
 float h = 1 / 256.0f;
 float epsilon = 1e-2;
 
-float *input, *target, *gradients, *input_change;
+float *input, *output, *target, *gradients, *input_change;
 CPPML::Network* net;
 
 float original_loss = 0;
@@ -32,11 +32,11 @@ void checkInputGradients(){
 		float err = std::abs((calc - input_change[i]) / calc);
 		avg += err;
 
-		//std::cerr << i << ", " << err << ", " << calc << ", " << input_change[i] << "\n";
+		if(err > epsilon) std::cerr << i << ", " << err << ", " << calc << ", " << input_change[i] << "\n";
 	}
 	avg /= input_length;
 
-	std::cerr << "Input derivative avg error = " << avg * 100 << "%\n";
+	std::cout << "Input derivative avg error = " << avg * 100 << "%\n";
 	if(avg > epsilon || avg < 0 || isnan(avg)){
 		exit(-1);
 	}
@@ -56,11 +56,11 @@ void checkParameterGradients(){
 		float err = std::abs((calc - gradients[i]) / calc);
 		avg += err;
 
-		//std::cerr << i << ", " << err << ", " << calc << ", " << gradients[i] << "\n";
+		if(err > epsilon) std::cerr << i << ", " << err << ", " << calc << ", " << gradients[i] << "\n";
 	}
 	avg /= net->num_params;
 
-	std::cerr << "Parameter derivative average error = " << avg * 100 << "%\n";
+	std::cout << "Parameter derivative average error = " << avg * 100 << "%\n";
 	if(avg > epsilon || avg < 0 || isnan(avg)){
 		exit(-1);
 	}
@@ -125,15 +125,15 @@ void setup(int seed = 0){
 	target = new float[output_length];
 	gradients = new float[net->num_params];
 	input_change = new float[net->last_io_size];
+	output = new float[output_length];
 
 	// fill input with random values
 	CPPML::Random::fillGaussian(input, input_length, 0, 1);
 
 	// fill output with random values
-	float* output = new float[output_length];
 	net->eval(input, output);
 	for(int i = 0; i < output_length; i++){
-		target[i] = output[i] + 10 * h;
+		target[i] = output[i] + CPPML::Random::randF(8, 12) * h;
 	}
 
 	// get original loss, input change, and weight gradients

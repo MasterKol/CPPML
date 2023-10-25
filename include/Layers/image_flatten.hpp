@@ -64,12 +64,15 @@ public:
 	// size of patches in the x and y directions
 	int xPatchSize, yPatchSize;
 
+	ImageFlatten* flatten_layer;
+
 	/// @param xPatchSize width of image embed patch size
 	/// @param yPatchSize height of image embed patch size
 	/// @param imgw width of the output image
 	/// @param imgh height of the output image
+	/// @param imgd depth of the output image
 	/// @param input *optional* singular input to this layer
-	ImageDeFlatten(int xPatchSize, int yPatchSize, int imgw, int imgh, Layer* input=nullptr);
+	ImageDeFlatten(int xPatchSize, int yPatchSize, int imgw, int imgh, int imgd=1, Layer* input=nullptr);
 	
 	// gets necessary inputs from provided flatten layer, also
 	// optionally takes in an input layer
@@ -83,7 +86,7 @@ public:
 	virtual std::string get_type_name(){return "Image_DeFlatten";}
 
 private:
-	void init(int xPatchSize_, int yPatchSize_, int imgw, int imgh, Layer* l);
+	void init(int xPatchSize_, int yPatchSize_, int imgw, int imgh, int imgd, Layer* l);
 
 	virtual void compute(float* input, float* output, float* intermediate_buffer);
 
