@@ -11,7 +11,7 @@
 #include "layer.hpp"
 #include "cost_func.hpp"
 
-const int SIZE = 100;
+const int SIZE = 10;
 
 float h = 1 / 256.0f;
 float epsilon = 1e-2;
@@ -40,35 +40,45 @@ int main(){
 	float* out = new float[SIZE];
 	input_change = new float[net->last_io_size];
 
-	// fill input with random values
-	CPPML::Random::fillGaussian(input, SIZE, 0, 1);
-	net->eval(input, out);
+	float total_avg = 0;
+	for(int j = 0; j < 1000; j++){
+		// fill input with random values
+		CPPML::Random::fillGaussian(input, SIZE, 0, 1);
+		net->eval(input, out);
 
-	// fill target with random values and softmax it so get x > 0 and sum(X) = 1
-	CPPML::Random::fillGaussian(target, SIZE, 0, 1);
-	CPPML::SOFTMAX->f(target, target, SIZE);
+		// fill target with random values and softmax it so get x > 0 and sum(X) = 1
+		CPPML::Random::fillGaussian(target, SIZE, 0, 1);
+		CPPML::SOFTMAX->f(target, target, SIZE);
 
-	// compute input_change
-	net->fit_network(input, target, nullptr, nullptr, input_change, &original_loss);
+		// compute input_change
+		net->fit_network(input, target, nullptr, nullptr, input_change, &original_loss);
 
-	// find avg error in input derivative
-	float avg = 0;
-	for(int i = 0; i < SIZE; i++){
-		float calc = out[i] - target[i];
-		float err = 0;
-		if(calc != 0){
-			err = std::abs((calc - input_change[i]) / calc);
-		}else if(input_change[i] != 0){
-			err = input_change[i] * 100000;
+		// find avg error in input derivative
+		float avg = 0;
+		for(int i = 0; i < SIZE; i++){
+			float calc = out[i] - target[i];
+			float err = 0;
+			if(calc != 0){
+				err = std::abs((calc - input_change[i]) / calc);
+			}else if(input_change[i] != 0){
+				err = input_change[i] * 100000;
+			}
+			avg += err;
+
+			//std::cerr << i << ", " << err << ", " << calc << ", " << input_change[i] << "\n";
 		}
-		avg += err;
+		avg /= SIZE;
 
-		std::cerr << i << ", " << err << ", " << calc << ", " << input_change[i] << "\n";
+		if(avg > epsilon || avg < 0 || isnan(avg)){
+			std::cerr << "Input derivative avg error = " << avg * 100 << "%\n";
+			exit(-1);
+		}
+
+		total_avg += avg;
 	}
-	avg /= SIZE;
-
-	std::cerr << "Input derivative avg error = " << avg * 100 << "%\n";
-	if(avg > epsilon || avg < 0 || isnan(avg)){
+	total_avg /= 1000;
+	std::cerr << "Input derivative avg error = " << total_avg * 100 << "%\n";
+	if(total_avg > epsilon || total_avg < 0 || isnan(total_avg)){
 		exit(-1);
 	}
 
