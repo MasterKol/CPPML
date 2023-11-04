@@ -12,6 +12,7 @@ class Network;
 class Optimizer {
 public:
 	Network* net;
+	float learning_rate;
 	// basically just an alias for the
 	// polymorphic function compile_
 	void compile(Network* net_){

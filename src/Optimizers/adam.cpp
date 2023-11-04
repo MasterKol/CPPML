@@ -18,6 +18,11 @@ Adam::Adam(float learning_rate_, float beta1_, float beta2_, float epsilon_){
 	t = 0;
 }
 
+Adam::~Adam(){
+	delete[] mt;
+	delete[] vt;
+}
+
 void Adam::compile_(){
 	mt = new float[net->num_params];
 	memset(mt, 0, net->num_params * sizeof(float));
