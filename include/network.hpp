@@ -74,7 +74,17 @@ public:
 
 	// number of examples that the net has been trained on
 	// since the last call to apply_gradients()
-	std::atomic_int num_examples{0};
+	std::atomic_int num_examples;
+
+	/// @brief Callback called each time fit_network processes an example, may be called in parallel
+	/// @param net this network
+	/// @param example example used for this training iteration
+	/// @param target target for this training iteration
+	/// @param loss points to computed loss, nullptr if loss is not calculated
+	/// @param last_io input and output values of all layers
+	/// @param intermediate intermediate values used by all layers
+	/// @param change local gradients of all layers, including inputs
+	void (*train_callback)(Network* net, float* example, float* target, float* loss, float* last_io, float* intermediate, float* change);
 
 	/// @brief Create new network
 	/// @param cost_func Cost function used for network evaluation

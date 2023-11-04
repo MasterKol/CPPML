@@ -8,6 +8,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <memory>
 
 #include "LinearAlgebra.hpp"
 #include "random.hpp"
@@ -36,6 +37,7 @@ Network::Network(const Cost_func* const cost_func_, std::string name){
 	output_layer = nullptr;
 	output_length = 0;
 	input_length = 0;
+	train_callback = nullptr;
 
 	gradients = nullptr;
 	params = nullptr;
@@ -194,36 +196,43 @@ void Network::eval(float* input, float* output, float* lio_){
 }
 
 void Network::fit_network(float* examples, float* targets, int num, float* loss){
-	if(loss != nullptr){
-		*loss = 0;
-	}
-	// loop over all provided examples
-	#pragma omp parallel for
-	for(int i = 0; i < num; i++){
+	float temp_loss = 0;
+	#pragma omp parallel reduction(+ : temp_loss)
+	{
+		std::unique_ptr<float[]> lio 	(  new float[last_io_size]		);
+		std::unique_ptr<float[]> inter	(  new float[intermediate_size] );
+		std::unique_ptr<float[]> change	(  new float[last_io_size]		);
 		if(loss == nullptr){
-			fit_network(examples + i * input_length, targets + i * output_length);
+			#pragma omp for
+			for(int i = 0; i < num; i++){
+				fit_network(examples + i * input_length, targets + i * output_length, lio.get(), inter.get(), change.get());
+			}
 		}else{
-			float t;
-			fit_network(examples + i * input_length, targets + i * output_length, nullptr, nullptr, nullptr, &t);
-			*loss += t;
+			#pragma omp for
+			for(int i = 0; i < num; i++){
+				float t;
+				fit_network(examples + i * input_length, targets + i * output_length, lio.get(), inter.get(), change.get(), &t);
+				temp_loss += t;
+			}
 		}
 	}
+	if(loss)
+		*loss = temp_loss;
 }
 
 void Network::fit_network(float* example, float* target, float* lio_, float* inter_, float* change_, float* loss){
 	// create memory for storing network io
 	float* lio = lio_;
-	if(lio_ == nullptr){
+	if(!lio_){
 		lio = new float[last_io_size];
 	}
 	// create memory for intermediate vals
 	float* inter = inter_;
-	if(inter_ == nullptr){
+	if(!inter_){
 		inter = new float[intermediate_size];
 	}
 	memset(inter, 0, intermediate_size * sizeof(float));
 	
-
 	// copy example to lio
 	memcpy(lio, example, input_length * sizeof(float));
 
@@ -235,7 +244,7 @@ void Network::fit_network(float* example, float* target, float* lio_, float* int
 
 	// create mem to store change for back prop
 	float* change = change_;
-	if(change_ == nullptr){
+	if(!change_){
 		change = new float[last_io_size];
 	}
 	memset(change, 0, last_io_size * sizeof(float)); // zero change
@@ -249,18 +258,20 @@ void Network::fit_network(float* example, float* target, float* lio_, float* int
 		*loss = cost_func->get_cost(lio + oi, target, output_length);
 	}
 	
-	// iterate over layers backwards and backpropagate
-	// through them
+	// iterate over layers backwards and backpropagate through them
 	for(auto l = layers.rbegin(); l != layers.rend(); l++){
 		(*l)->backpropagate(change, lio, inter);
 	}
 
+	if(train_callback)
+		train_callback(this, example, target, loss, lio, inter, change);
+
 	// free memory if it was created locally
-	if (lio_ == nullptr)
+	if (!lio_)
 		delete[] lio;
-	if (inter_ == nullptr)
+	if (!inter_)
 		delete[] inter;
-	if (change_ == nullptr)
+	if (!change_)
 		delete[] change;
 
 	num_examples++;
