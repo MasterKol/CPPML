@@ -50,12 +50,13 @@
 // vDSP_vma			(const float *__A, vDSP_Stride __IA, const float *__B, vDSP_Stride __IB, const float *__C, vDSP_Stride __IC, float *__D, vDSP_Stride __ID, vDSP_Length __N);
 // vDSP_vmmsb		(const float *__A, vDSP_Stride __IA, const float *__B, vDSP_Stride __IB, const float *__C, vDSP_Stride __IC, const float *__D, vDSP_Stride __ID, float *__E, vDSP_Stride __IE, vDSP_Length __N);
 
-// Has the accelerate framework (OSX only I think)
-//#define ACCEL
+//#define USE_LINEAR_ALGEBRA_FUNCS
 
-#if defined(__has_include) && __has_include(<Accelerate/Accelerate.h>)
-	#include <Accelerate/Accelerate.h>
+// Has the accelerate framework (OSX only I think)
+#if defined(USE_LINEAR_ALGEBRA_FUNCS) || (defined(__has_include) && __has_include(<Accelerate/Accelerate.h>))
+ 	#include <Accelerate/Accelerate.h>
 #else
+	#define USE_LINEAR_ALGEBRA_FUNCS
 	namespace CPPML {
 	// fills array out with value v
 	void vDSP_vfill(const float* v, float* out, int OutStride, int N);
