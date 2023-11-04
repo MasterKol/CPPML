@@ -173,7 +173,7 @@ void CrossAttention::attention_head(float* Qin, float* VKin,
 	}
 }
 
-void CrossAttention::compute(float* input, float* output, float* intermediate_buffer){
+void CrossAttention::compute(float* input, float* output, float* intermediate_buffer, bool training){
 	// compute size of all matrices for later use
 	const int Qw_size = qk_embed_size *  Q_shape.w();
 	const int Vw_size =  v_embed_size * VK_shape.w();

@@ -128,7 +128,7 @@ inline void SelfAttention::attention_head(float* input,
 	}
 }
 
-void SelfAttention::compute(float* input, float* output, float* intermediate_buffer){
+void SelfAttention::compute(float* input, float* output, float* intermediate_buffer, bool training){
 	// size of Q, V, and K
 	const int QVK_size = internal_size * input_shape.h();
 	// input height squared

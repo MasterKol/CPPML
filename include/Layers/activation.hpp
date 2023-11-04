@@ -24,7 +24,7 @@ public:
 
 	virtual std::string get_type_name(){return "Activation";}
 private:
-	virtual void compute(float* input, float* output, float* intermediate_buffer);
+	virtual void compute(float* input, float* output, float* intermediate_buffer, bool training);
 
 	virtual void get_change_grads(float* out_change, float* inpt_change,
 				  float* input, float* output, float* intermediate);

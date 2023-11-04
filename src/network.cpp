@@ -239,7 +239,7 @@ void Network::fit_network(float* example, float* target, float* lio_, float* int
 	// process input through each layer and get
 	// intermediate values
 	for(Layer* l : layers){
-		l->process(lio, inter);
+		l->process(lio, inter, true);
 	}
 
 	// create mem to store change for back prop

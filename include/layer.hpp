@@ -81,7 +81,8 @@ public:
 	///		   locations in io_buffer and writes output to output_index
 	/// @param io_buffer contains outputs of all layers in the network, in order
 	/// @param intermediate_buffer contains intermediate values used only for training, null during inference
-	void process(float* io_buffer, float* intermediate_buffer=nullptr);
+	/// @param training *optional* is this train time or eval time?
+	void process(float* io_buffer, float* intermediate_buffer=nullptr, bool training=false);
 
 	/// @brief Compiles layer, does basic setup before calling layer specific compile_
 	/// @param buffer_index index in io_buffer that outputs should be written to
@@ -131,8 +132,9 @@ private:
 	/// @param input input into the layer, contiguous
 	/// @param output location to write layer output to
 	/// @param intermediate_buffer location to write intermediate values (may be nullptr)
+	/// @param training is this train time or eval time?
 	virtual void compute(float* input, float* output, 
-						 float* intermediate_buffer) = 0;
+						 float* intermediate_buffer, bool training) = 0;
 
 	// sets up a layer given its inputs are already
 	// compiled, only need to set i/o size and intermediate_num

@@ -56,7 +56,7 @@ bool Upscale2d::compile_(){
 // no population needs to be done as this layer has no params
 void Upscale2d::populate(float* params, float* gradients){}
 
-void Upscale2d::compute(float* input, float* output, float* intermediate_buffer){
+void Upscale2d::compute(float* input, float* output, float* intermediate_buffer, bool training){
 	// pointers to current position in input/output
 	float* out_cur = output;
 	float* in_cur  = input;

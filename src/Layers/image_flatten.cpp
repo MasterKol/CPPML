@@ -53,7 +53,7 @@ bool ImageFlatten::compile_(){
 
 void ImageFlatten::populate(float* params, float* gradients){}
 
-void ImageFlatten::compute(float* input, float* output, float* intermediate_buffer){
+void ImageFlatten::compute(float* input, float* output, float* intermediate_buffer, bool training){
 	to_matrix(output, input, output_shape, image_shape, xPatchSize, yPatchSize, xPatches, yPatches);
 
 	// --==== add position embeddings ====--
@@ -205,7 +205,7 @@ bool ImageDeFlatten::compile_(){
 	return false;
 }
 
-void ImageDeFlatten::compute(float* input, float* output, float* intermediate_buffer){
+void ImageDeFlatten::compute(float* input, float* output, float* intermediate_buffer, bool training){
 	to_image(input, output, input_shape, output_shape, xPatchSize, yPatchSize, xPatches, yPatches);
 }
 

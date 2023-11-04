@@ -55,7 +55,7 @@ private:
 	// initialize layer
 	void init(int xScale, int yScale, int xPadding, int yPadding, int iw, int ih);
 
-	virtual void compute(float* input, float* output, float* intermediate_buffer);
+	virtual void compute(float* input, float* output, float* intermediate_buffer, bool training);
 
 	virtual bool compile_();
 

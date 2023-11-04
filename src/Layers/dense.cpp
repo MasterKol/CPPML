@@ -44,7 +44,7 @@ void Dense::populate(float* params, float* gradients){
 	// biases are already zeroed and should stay that way
 }
 
-void Dense::compute(float* input, float* output, float* inter_ptr){
+void Dense::compute(float* input, float* output, float* inter_ptr, bool training){
 	if(inter_ptr == nullptr){
 		inter_ptr = output;
 	}

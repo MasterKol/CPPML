@@ -62,7 +62,7 @@ public:
 	virtual void populate(float* params, float* gradients);
 	virtual std::string get_type_name(){return "SelfAttention";}
 private:
-	virtual void compute(float* input, float* output, float* intermediate_buffer);
+	virtual void compute(float* input, float* output, float* intermediate_buffer, bool training);
 
 	virtual bool compile_();
 

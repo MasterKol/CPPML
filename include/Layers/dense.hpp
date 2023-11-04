@@ -36,7 +36,7 @@ public:
 
 	virtual std::string get_type_name(){return "Dense";}
 private:
-	virtual void compute(float* input, float* output, float* intermediate_buffer);
+	virtual void compute(float* input, float* output, float* intermediate_buffer, bool training);
 
 	virtual bool compile_();
 

@@ -15,7 +15,7 @@ bool ActivationLayer::compile_(){
 	return false;
 }
 
-void ActivationLayer::compute(float* input, float* output, float* intermediate_buffer){
+void ActivationLayer::compute(float* input, float* output, float* intermediate_buffer, bool training){
 	act->f(input, output, input_shape.size());
 }
 

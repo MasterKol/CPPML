@@ -87,7 +87,7 @@ private:
 		float* Q, float* K, float* KT, float* V, float* QKT,
 		float* Z, float* O, const float norm_factor, bool calculateO);
 	
-	virtual void compute(float* input, float* output, float* intermediate_buffer);
+	virtual void compute(float* input, float* output, float* intermediate_buffer, bool training);
 
 	virtual bool compile_();
 

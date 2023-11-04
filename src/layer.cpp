@@ -75,7 +75,7 @@ void Layer::collect_inputs(float* io_buffer, float* input){
 	}
 }
 
-void Layer::process(float* io_buffer, float* intermediate_buffer){
+void Layer::process(float* io_buffer, float* intermediate_buffer, bool training){
 	float* output = io_buffer + output_index;
 	float* intermediate = nullptr;
 	float* input = nullptr;
@@ -92,7 +92,7 @@ void Layer::process(float* io_buffer, float* intermediate_buffer){
 			// input layers have 0 inputs, the default one
 			// does no computation but if someone extends
 			// it they might want to do something...
-			compute(input, output, intermediate);
+			compute(input, output, intermediate, training);
 			return;
 	}
 
@@ -101,7 +101,7 @@ void Layer::process(float* io_buffer, float* intermediate_buffer){
 	
 	collect_inputs(io_buffer, input);
 
-	compute(input, output, intermediate);
+	compute(input, output, intermediate, training);
 
 	delete[] input;
 }

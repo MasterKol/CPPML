@@ -20,7 +20,7 @@ void Input::populate(float* params, float* gradients){
 	return; // nothing to do
 }
 
-void Input::compute(float* input, float* output, float* intermediate_buffer){
+void Input::compute(float* input, float* output, float* intermediate_buffer, bool training){
 	return; // nothing to do
 }
 

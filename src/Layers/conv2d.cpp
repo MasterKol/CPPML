@@ -115,7 +115,7 @@ float* Conv2d::pad_img(float* input, float* dest){
 	return padded;
 }
 
-void Conv2d::compute(float* input, float* output, float* intermediate_buffer){
+void Conv2d::compute(float* input, float* output, float* intermediate_buffer, bool training){
 	// if image needs to be padded than it will be stored here
 	// otherwise this is just and alias for input
 	float* padded = input;

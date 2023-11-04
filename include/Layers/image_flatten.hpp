@@ -45,7 +45,7 @@ private:
 	// initialize layer
 	void Init(int xPatchSize, int yPatchSize, int xEmbSize, int yEmbSize, Layer* l);
 
-	virtual void compute(float* input, float* output, float* intermediate_buffer);
+	virtual void compute(float* input, float* output, float* intermediate_buffer, bool training);
 
 	virtual bool compile_();
 
@@ -88,7 +88,7 @@ public:
 private:
 	void init(int xPatchSize_, int yPatchSize_, int imgw, int imgh, int imgd, Layer* l);
 
-	virtual void compute(float* input, float* output, float* intermediate_buffer);
+	virtual void compute(float* input, float* output, float* intermediate_buffer, bool training);
 
 	virtual bool compile_();
 	

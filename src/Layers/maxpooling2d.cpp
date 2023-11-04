@@ -92,7 +92,7 @@ inline void MaxPooling2d::process_out_line(float* inlayer, float* otlayer,
 	}
 }
 
-void MaxPooling2d::compute(float* input, float* output, float* intermediate_buffer){
+void MaxPooling2d::compute(float* input, float* output, float* intermediate_buffer, bool training){
 	float* inlayer = input;
 	float* otlayer = output;
 	int* selected = (int*)intermediate_buffer;
