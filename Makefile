@@ -14,6 +14,7 @@ upscale2d.o \
 self_attention.o \
 cross_attention.o \
 image_flatten.o \
+dropout.o \
 input.o \
 adam.o \
 sgd.o \

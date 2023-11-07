@@ -8,13 +8,14 @@
 
 namespace CPPML {
 
-Adam::Adam(float learning_rate_, float beta1_, float beta2_, float epsilon_){
+Adam::Adam(float learning_rate_, float learning_rate_falloff_, float beta1_, float beta2_, float epsilon_){
 	beta1 = beta1_;
 	beta2 = beta2_;
 	beta1_hat = 1;
 	beta2_hat = 1;
 	epsilon = epsilon_;
 	learning_rate = learning_rate_;
+	learning_rate_falloff = learning_rate_falloff_;
 	t = 0;
 }
 
@@ -62,7 +63,7 @@ void Adam::update_params(){
 	vDSP_vdiv(grads, 1, mt, 1, grads, 1, num_params);
 
 	// computes grad <- grad * lr / (beta1hat - 1)
-	float lrd1mb1h = learning_rate / (beta1_hat - 1);
+	float lrd1mb1h = learning_rate / sqrtf(1 + t * learning_rate_falloff) / (beta1_hat - 1);
 	vDSP_vsmul(grads, 1, &lrd1mb1h, grads, 1, num_params);
 
 	// params += grads
