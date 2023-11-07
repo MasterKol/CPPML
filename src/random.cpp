@@ -9,38 +9,39 @@
 namespace CPPML {
 
 std::mt19937 Random::rng = std::mt19937(0);
-std::uniform_real_distribution<float> Random::unif_dist = std::uniform_real_distribution<float>(0.0f, 1.0f);
-std::normal_distribution<float> Random::norm_dist = std::normal_distribution<float>{0, 1};
 
 int Random::randI(int max){
-	return std::floor(unif_dist(rng) * max);
+	std::uniform_int_distribution<int> distribution (0, max-1);
+	return distribution(rng);
 }
 
 int Random::randI(int min, int max){
-	return std::floor(min + unif_dist(rng) * (max - min));
+	std::uniform_int_distribution<int> distribution (min, max-1);
+	return distribution(rng);
 }
 
 float Random::randF(float min, float max){
-	return min + unif_dist(rng) * (max - min);
+	std::uniform_real_distribution<float> distribution (min, max);
+	return distribution(rng);
 }
 
 void Random::fillRand(float* a, int N, float min, float max){
+	std::uniform_real_distribution<float> distribution (min, max);
 	for(int i = 0; i < N; i++){
-		a[i] = unif_dist(rng);
+		a[i] = distribution(rng);
 	}
-	float m = (max - min);
-	vDSP_vsmsa(a, 1, &m, &min, a, 1, N);
 }
 
 float Random::randomGaussian(float mean, float sdv){
-	return norm_dist(rng) * sdv + mean;
+	std::normal_distribution<float> distribution (mean, sdv);
+	return distribution(rng);
 }
 
 void Random::fillGaussian(float* a, int N, float mean, float sdv){
+	std::normal_distribution<float> distribution (mean, sdv);
 	for(int i = 0; i < N; i++){
-		a[i] = norm_dist(rng);
+		a[i] = distribution(rng);
 	}
-	vDSP_vsmsa(a, 1, &sdv, &mean, a, 1, N);
 }
 
 void Random::rand_seed(int seed){

@@ -7,13 +7,11 @@ namespace CPPML {
 
 /*
  * Handles generation of random numbers
+ * Not thread safe
 */
 class Random {
-private:
-	static std::mt19937 rng;
-	static std::uniform_real_distribution<float> unif_dist;
-	static std::normal_distribution<float> norm_dist;
 public:
+	static std::mt19937 rng;
 	
 	/// @brief returns uniform random float in the range (min, max)
 	/// @param min minimum possible value
