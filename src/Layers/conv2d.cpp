@@ -235,7 +235,7 @@ void Conv2d::add_grads(float* input, float* out_change){
 void Conv2d::get_change_grads(float* out_change, float* inpt_change,
 					float* input, float* output, float* intermediate){
 	// out_change <- activation'(intermediate) * out_change
-	activation->df(intermediate, out_change, output, out_change, input_shape.size());
+	activation->df(intermediate, out_change, output, out_change, output_shape.size());
 
 	const int pkw = kw - 1 - padding; // padding to add
 	const int pkh = kh - 1 - padding;
