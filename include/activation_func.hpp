@@ -51,6 +51,12 @@ void sigmoid_df(const float* input, float* input_gradients, float* output, float
 const ActivationFunc sigmoid_org = {sigmoid_f, sigmoid_df};
 const ActivationFunc* const SIGMOID = &sigmoid_org;
 
+void tanh_f(const float* input, float* output, int length);
+void tanh_df(const float* input, float* input_gradients, float* output, float* output_gradients, int length);
+
+const ActivationFunc tanh_org = {tanh_f, tanh_df};
+const ActivationFunc* const TANH = &tanh_org;
+
 void softmax_f(const float* input, float* output, int length);
 void softmax_df(const float* input, float* input_gradients, float* output, float* output_gradients, int length);
 

@@ -356,6 +356,15 @@ void vDSP_vaam(const float *A, int AStride, const float *B, int BStride, const f
 	}
 }
 
+void vvtanhf(float *output, const float *input, const int *length){
+	for(int i = 0; i < *length; i++){
+		float inexp = exp(input[i]);
+		float inv_inexp = 1 / inexp;
+
+		output[i] = (inexp - inv_inexp) / (inexp + inv_inexp);
+	}
+}
+
 } // namespace CPPML
 
 #endif

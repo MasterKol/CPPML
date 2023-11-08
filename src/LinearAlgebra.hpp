@@ -132,6 +132,8 @@
 	void vDSP_vmmsb(const float *A, int AStride, const float *B, int BStride, const float *C, int CStride, const float *D, int DStride, float *E, int EStride, int N);
 	// Multiplies the sum of two single-precision vectors by a second sum of two single-precision vectors. (A + B) * (C * D) -> E
 	void vDSP_vaam(const float *A, int AStride, const float *B, int BStride, const float *C, int CStride, const float *D, int DStride, float *E, int EStride, int N);
+	// computes the hyperbolic tan of a vector
+	void vvtanhf(float *output, const float *input, const int *length);
 
 	} // namespace CPPML
 #endif

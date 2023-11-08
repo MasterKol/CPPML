@@ -74,14 +74,37 @@ void sigmoid_f(const float* input, float* output, int length){ // computes 1 / (
 }
 
 void sigmoid_df(const float* input, float* input_gradients, float* output, float* output_gradients, int length){ // computes (1 / (1 + e^-x)), x <- t * t - t for all x in d
-	vDSP_vneg(input, 1, output, 1, length); // out <- -in
-	vvexpf(output, output, &length); // out <- e^out
-	const float one = 1.0;
-	vDSP_vsadd(output, 1, &one, output, 1, length); // out <- out + 1
-	vvrecf(output, output, &length); // out <- 1/out
+	// out_grads *= output
+	vDSP_vmul(output, 1, output_gradients, 1, output_gradients, 1, length);
 
-	vDSP_vmsb(output, 1, output, 1, output, 1, output, 1, length); // out <- out * out + out
-	vDSP_vneg(output, 1, output, 1, length); // out <- -out
+	// output = -output
+	vDSP_vneg(output, 1, output, 1, length);
+
+	// output += 1
+	const float one = 1;
+	vDSP_vsadd(output, 1, &one, output, 1, length);
+
+	// out_grads *= output
+	vDSP_vmul(output, 1, output_gradients, 1, input_gradients, 1, length);
+}
+
+/**************** TANH ****************/
+void tanh_f(const float* input, float* output, int length){
+	vvtanhf(output, input, &length);
+}
+
+void tanh_df(const float* input, float* input_gradients, float* output, float* output_gradients, int length){
+	// 1 - out^2
+
+	// output <- output * output
+	vDSP_vmul(output, 1, output, 1, output, 1, length);
+	
+	// output <- -output
+	vDSP_vneg(output, 1, output, 1, length);
+
+	// output += 1
+	const float one = 1;
+	vDSP_vsadd(output, 1, &one, output, 1, length);
 
 	// in_grad = out_grad * Jacobian (out)
 	vDSP_vmul(output, 1, output_gradients, 1, input_gradients, 1, length);
