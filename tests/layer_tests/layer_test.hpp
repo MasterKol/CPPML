@@ -20,6 +20,7 @@ float original_loss = 0;
 
 float getDerv(float*);
 void setup(int);
+void (*set_input)(float* input) = nullptr;
 
 /// @brief Checks derivative of network inputs and compares
 ///		   them to empirical value
@@ -91,6 +92,26 @@ float getDerv(float* toChange){
 	return (costph + costmh + cost2ph + cost2mh) / (12 * h);
 }
 
+void retest(){
+	// fill input with random values
+	CPPML::Random::fillGaussian(input, input_length, 0, 1);
+	if(set_input)
+		set_input(input);
+
+	// fill output with random values
+	net->eval(input, output);
+	for(int i = 0; i < output_length; i++){
+		target[i] = output[i] + CPPML::Random::randF(8, 12) * h;
+	}
+
+	// zero network gradients
+	memset(net->gradients, 0, net->num_params * sizeof(float));
+	
+	// get original loss, input change, and weight gradients
+	net->fit_network(input, target, nullptr, nullptr, input_change, &original_loss);
+	memcpy(gradients, net->gradients, net->num_params * sizeof(float));
+}
+
 /// @brief Sets up net for a single layer to be tested
 /// @param layer layer to be tested, will be added to a network
 /// @param input_shape shape of input to the network (and the given layer)
@@ -129,6 +150,8 @@ void setup(int seed = 0){
 
 	// fill input with random values
 	CPPML::Random::fillGaussian(input, input_length, 0, 1);
+	if(set_input)
+		set_input(input);
 
 	// fill output with random values
 	net->eval(input, output);
