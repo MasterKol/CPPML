@@ -12,6 +12,7 @@ namespace CPPML {
  * DON'T USE add_input FOR THIS LAYER, USE add_VK / add_Q
  * Performs multi-head cross attention on two different sets
  * of inputs. Outputs with specified width and height of Q inputs.
+ * Q and VK widths must match
  */
 class CrossAttention : public Layer {
 public:
@@ -42,7 +43,7 @@ public:
 	/// @param Qs Q inputs, in a list captured by {}
 	/// @param VKs VK inputs, in a list captured by {}
 	CrossAttention(int num_heads, int qk_embed_size, int v_embed_size, std::initializer_list<Layer*> Qs={}, std::initializer_list<Layer*> VKs={}){
-		init(num_heads, qk_embed_size, v_embed_size, -1, -1, -1, Qs, VKs);
+		init(num_heads, qk_embed_size, v_embed_size, -1, -1, Qs, VKs);
 	}
 
 	/// @param num_heads number of attention heads
@@ -52,7 +53,7 @@ public:
 	/// @param Qs Q inputs, in a list captured by {}
 	/// @param VKs VK inputs, in a list captured by {}
 	CrossAttention(int num_heads, int qk_embed_size, int v_embed_size, int output_width, std::initializer_list<Layer*> Qs={}, std::initializer_list<Layer*> VKs={}){
-		init(num_heads, qk_embed_size, v_embed_size, output_width, -1, -1, Qs, VKs);
+		init(num_heads, qk_embed_size, v_embed_size, output_width, -1, Qs, VKs);
 	}
 
 	/// @param num_heads number of attention heads
@@ -63,8 +64,8 @@ public:
 	/// @param VKwidth width to cast VK inputs to
 	/// @param Qs Q inputs, in a list captured by {}
 	/// @param VKs VK inputs, in a list captured by {}
-	CrossAttention(int num_heads, int qk_embed_size, int v_embed_size, int output_width, int Qwidth, int VKwidth, std::initializer_list<Layer*> Qs={}, std::initializer_list<Layer*> VKs={}){
-		init(num_heads, qk_embed_size, v_embed_size, output_width, Qwidth, VKwidth, Qs, VKs);
+	CrossAttention(int num_heads, int qk_embed_size, int v_embed_size, int output_width, int input_width, std::initializer_list<Layer*> Qs={}, std::initializer_list<Layer*> VKs={}){
+		init(num_heads, qk_embed_size, v_embed_size, output_width, input_width, Qs, VKs);
 	}
 
 	/// @brief Adds a layer as a VK input
@@ -79,7 +80,7 @@ public:
 	virtual std::string get_type_name(){return "CrossAttention";}
 private:
 	// initialize layer
-	void init(int num_heads_, int qk_embed_size_, int v_embed_size, int output_width, int Qwidth, int VKwidth, std::initializer_list<Layer*> Qs, std::initializer_list<Layer*> VKs);
+	void init(int num_heads_, int qk_embed_size_, int v_embed_size, int output_width, int input_width, std::initializer_list<Layer*> Qs, std::initializer_list<Layer*> VKs);
 
 	// compute values for a single attention head
 	void attention_head(float* Qin, float* VKin,

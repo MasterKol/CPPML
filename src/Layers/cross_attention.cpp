@@ -8,13 +8,13 @@
 
 namespace CPPML {
 
-void CrossAttention::init(int num_heads_, int qk_embed_size_, int v_embed_size_, int output_width, int Qwidth, int VKwidth, std::initializer_list<Layer*> Qs, std::initializer_list<Layer*> VKs){
+void CrossAttention::init(int num_heads_, int qk_embed_size_, int v_embed_size_, int output_width, int input_width, std::initializer_list<Layer*> Qs, std::initializer_list<Layer*> VKs){
 	num_heads = num_heads_;
 	qk_embed_size = qk_embed_size_;
 	v_embed_size = v_embed_size_;
 	output_shape.w(output_width);
-	Q_shape.w(Qwidth);
-	VK_shape.w(VKwidth);
+	Q_shape.w(input_width);
+	VK_shape.w(input_width);
 
 	for(auto l = VKs.begin(); l != VKs.end(); l++){
 		add_VK(*l);
@@ -36,20 +36,28 @@ void CrossAttention::add_Q(Layer* layer){
 }
 
 void get_shape(std::vector<Layer*> Ls, Shape* shape){
-	// try and use preset width if its > 0
-	bool set_width = true;
-	if(shape->w() <= 0){
-		set_width = false;
-		shape->w(Ls[0]->output_shape.w());
-	}
+	// try and use preset width if it's > 0
+	// bool set_width = shape->w() > 0;
 	shape->h(0);
 
 	// loop over layers and compute input shape
 	for(Layer* l : Ls){
-		if((!set_width && shape->w() != l->output_shape.w()) || (set_width && l->output_shape.size() % shape->w() != 0)){
-			std::cerr << "Input widths do not match in cross attention\n";
+		if(l->output_shape.h() == 1 && l->output_shape.size() % shape->w() != 0){
+			std::cerr << "Cross attention: Could not cast size to given width\n";
+			std::cerr << "Expected a multiple of " << shape->w() << " but off by " << l->output_shape.size() % shape->w() << "\n";
 			exit(-1);
 		}
+		if(l->output_shape.h() != 1 && shape->w() != l->output_shape.w()){
+			std::cerr << "Input widths do not match in cross attention, all widths must be the same\n";
+			std::cerr << "Expected width to be " << shape->w() << " but got " << l->output_shape.w() << "\n";
+			exit(-1);
+		}
+
+		/*if((!set_width && shape->w() != l->output_shape.w()) || (set_width && l->output_shape.size() % shape->w() != 0)){
+			std::cerr << "Input widths do not match in cross attention, all widths must be the same\n";
+			std::cerr << "Expected width to be " << shape->w() << " but got " << l->output_shape.w() << "\n";
+			exit(-1);
+		}*/
 		shape->h(shape->h() + l->output_shape.size() / shape->w());
 	}
 }
@@ -71,8 +79,15 @@ bool CrossAttention::compile_(){
 		inputs.push_back(l);
 	}
 
+	// if input_width was not set then pull input width from first input layer
+	if(Q_shape.w() <= 0){
+		Q_shape.w(inputs[0]->output_shape.w());
+		VK_shape.w(inputs[0]->output_shape.w());
+	}
+
 	get_shape(Q_layers, &Q_shape);
 	get_shape(VK_layers, &VK_shape);
+
 	input_shape = Shape(Q_shape.size() + VK_shape.size());
 
 	output_shape = Shape((output_shape.w() <= 0) ? Q_shape.w() : output_shape.w(), 
@@ -259,6 +274,7 @@ static void d_softmax(float* val, float* grad, int N){
 
 void CrossAttention::get_change_grads(float* out_change, float* input_change,
 				  float* input, float* output, float* intermediate){
+	//memset(input_change, 0, input_shape.size() * sizeof(float));
 	// compute size of all matrices for later use
 	const int Qw_size = qk_embed_size *  Q_shape.w();
 	const int Vw_size =  v_embed_size * VK_shape.w();
@@ -304,7 +320,7 @@ void CrossAttention::get_change_grads(float* out_change, float* input_change,
 	// buffer for storing intermediate operations FIXME
 	// buff needs to store
 	// Q, K, V, Z, In, S
-	const int buff_size = std::max({Q_size, K_size, V_size, Z_size, S_size, Q_shape.size(), VK_shape.size()});
+	const int buff_size = std::max({Q_size, K_size, V_size, Z_size, S_size, Zw_size, Q_shape.size(), VK_shape.size()});
 	float* buff = new float[buff_size];
 
 	// memory for storing temp storage gradients,
@@ -334,10 +350,10 @@ void CrossAttention::get_change_grads(float* out_change, float* input_change,
 
 		// t_grad(z_grad) <- buff(Z)^T * Out_change
 		vDSP_mmul(buff, 1, out_change, 1, z_grd_t, 1, v_embed_size, output_shape.w(), Q_shape.h());
-
+		
 		// buff <- z_weights^T
 		vDSP_mtrans(z_mat_h, 1, buff, 1, output_shape.w(), v_embed_size);
-
+		
 		// dZ = out_change * z_weights^T (out_change * buff)
 		vDSP_mmul(out_change, 1, buff, 1, dZ, 1, Q_shape.h(), v_embed_size, output_shape.w());
 
@@ -371,7 +387,7 @@ void CrossAttention::get_change_grads(float* out_change, float* input_change,
 		}
 
 		// dont' need to transpose K because it is already in the correct form
-
+		
 		// dP (dQ) = dQKT * K
 		vDSP_mmul(QKT_sm, 1, K, 1, dP, 1, Q_shape.h(), qk_embed_size, VK_shape.h());
 
