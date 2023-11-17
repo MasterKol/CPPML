@@ -365,6 +365,18 @@ void vvtanhf(float *output, const float *input, const int *length){
 	}
 }
 
+void vDSP_vswap(float *A, int AStride, float *B, int BStride, int length){
+	float t;
+	for(int i = 0; i < length; i++){
+		t = *A;
+		*A = *B;
+		*B = t;
+
+		A += AStride;
+		B += BStride;
+	}
+}
+
 } // namespace CPPML
 
 #endif

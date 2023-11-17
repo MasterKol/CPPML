@@ -134,6 +134,8 @@
 	void vDSP_vaam(const float *A, int AStride, const float *B, int BStride, const float *C, int CStride, const float *D, int DStride, float *E, int EStride, int N);
 	// computes the hyperbolic tan of a vector
 	void vvtanhf(float *output, const float *input, const int *length);
+	// swaps contents of arrays A and B
+	void vDSP_vswap(float *A, int AStride, float *B, int BStride, int length);
 
 	} // namespace CPPML
 #endif

@@ -64,10 +64,17 @@ public:
 	// length of network output
 	int output_length;
 
+	float ema_decay_rate;
+
 	// total number of parameters in the network
 	int num_params;
 	// all network parameters
 	float* params;
+
+	// exponential moving average of parameters
+	float* ema_params;
+	// are the values in params ema?
+	bool params_ema;
 
 	// gradient of network parameters
 	float* gradients;
@@ -88,8 +95,9 @@ public:
 
 	/// @brief Create new network
 	/// @param cost_func Cost function used for network evaluation
+	/// @param ema_decay_rate decay rate for exponential moving average, 0 is disabled (default)
 	/// @param name Name of the model
-	Network(const Cost_func* const cost_func, std::string name="model");
+	Network(const Cost_func* const cost_func, float ema_decay_rate=0.0f, std::string name="model");
 
 	// adds a layer to the network that is used for input
 	// these layers should have no inputs themselves
@@ -114,6 +122,14 @@ public:
 	/// @param output Place to write network output
 	/// @param lio *optional* memory where network intermediates are stored (size=last_io_size)
 	void eval(float* input, float* output, float* lio=nullptr);
+
+	// moves ema parameters to params
+	// if no ema, then nothing is done
+	void set_params_to_ema();
+
+	// moves params from ema back to params nothing is
+	// done if params are in the proper place already.
+	void set_params_to_norm();
 
 	// examples: array of examples with length = num * input  size
 	// targets : array of targets  with length = num * output size
@@ -151,8 +167,9 @@ public:
 
 	/// @brief Saves model weights to designated file
 	/// @param file_name path to file to write to
+	/// @param save_ema saves ema parameters rather than normal parameters if possible
 	/// @return Returns error code if failure
-	Err save(std::string file_name);
+	Err save(std::string file_name, bool save_ema=true);
 
 	/// @brief Loads model weights from designated file
 	/// @param file_name path to file to read from

@@ -29,7 +29,7 @@ int myisatty(int fd){
 
 namespace CPPML {
 
-Network::Network(const Cost_func* const cost_func_, std::string name){
+Network::Network(const Cost_func* const cost_func_, float ema_decay_rate_, std::string name){
 	cost_func = cost_func_;
 	num_layers = 0;
 	last_io_size = 0;
@@ -38,6 +38,9 @@ Network::Network(const Cost_func* const cost_func_, std::string name){
 	output_length = 0;
 	input_length = 0;
 	train_callback = nullptr;
+	ema_decay_rate = ema_decay_rate_;
+	ema_params = nullptr;
+	params_ema = false;
 
 	gradients = nullptr;
 	params = nullptr;
@@ -47,6 +50,20 @@ Network::Network(const Cost_func* const cost_func_, std::string name){
 
 void Network::add_input_layer(Input* input_layer){
 	input_layers.push_back(input_layer);
+}
+
+void Network::set_params_to_ema(){
+	if(!ema_params || params_ema)
+		return
+	vDSP_vswap(params, 1, ema_params, 1, num_params);
+	params_ema = true;
+}
+
+void Network::set_params_to_norm(){
+	if(!ema_params || !params_ema)
+		return
+	vDSP_vswap(params, 1, ema_params, 1, num_params);
+	params_ema = false;
 }
 
 void Network::compile(Optimizer* optimizer_){
@@ -88,12 +105,14 @@ void Network::compile(Optimizer* optimizer_){
 	}
 
 	// allocate parameter array for use by all layers
-	params = new float[num_params];
-	memset(params, 0, sizeof(float) * num_params); // zero params
+	params = new float[num_params]();
+
+	// allocate ema array for use by all layers
+	if(ema_decay_rate != 0)
+		ema_params = new float[num_params]();
 
 	// allocate gradient array for use by all layers
-	gradients = new float[num_params];
-	memset(gradients, 0, sizeof(float) * num_params); // zero gradients
+	gradients = new float[num_params]();
 
 	// loop over all layers and give them a pointer to their segment of
 	// the parameter/gradient memory and tell them to initialize it
@@ -105,6 +124,10 @@ void Network::compile(Optimizer* optimizer_){
 		layer_prms += layer->num_params;
 		layer_grds += layer->num_params;
 	}
+
+	// copy params to ema_params if it exists
+	if(ema_params)
+		memcpy(ema_params, params, num_params * sizeof(float));
 
 	// compile optimizer after all layers are compiled so
 	// that it has information about how many params
@@ -295,9 +318,14 @@ void Network::apply_gradients(){
 	// reset num examples and zero gradients
 	num_examples = 0;
 	memset(gradients, 0, num_params * sizeof(float));
+
+	if(ema_params){
+		float n_ema_m1 = 1 - ema_decay_rate;
+		vDSP_vsmsma(ema_params, 1, &ema_decay_rate, params, 1, &n_ema_m1, ema_params, 1, num_params);
+	}
 }
 
-Network::Err Network::save(std::string file_name){
+Network::Err Network::save(std::string file_name, bool save_ema){
 	// open file as output, binary, and delete original content
 	std::ofstream file (file_name, std::ios::out|std::ios::binary|std::ios::trunc);
 	if (!file.is_open())
@@ -309,6 +337,9 @@ Network::Err Network::save(std::string file_name){
 
 	// tell compiler to read params as uint instead of float
 	uint* u_params = (uint*)params;
+
+	if(ema_params && ((!params_ema) ^ save_ema)) // if ema is enabled, save ema rather than base parameters
+		u_params = (uint*)ema_params;
 
 	// loop over params
 	for(int i = 0; i < num_params; i++){
@@ -348,6 +379,10 @@ Network::Err Network::load(std::string file_name){
 	}
 
 	file.close();
+
+	if(ema_params)
+		memcpy(ema_params, params, num_params * sizeof(float));
+
 	return success;
 }
 
