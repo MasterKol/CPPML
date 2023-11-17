@@ -22,7 +22,9 @@ bool Dense::compile_(){
 	num_biases = output_shape.size();
 
 	num_params = num_weights + num_biases;
-	intermediate_num = output_shape.size();
+
+	if(activation) // intermediate only needed if there is an activation
+		intermediate_num = output_shape.size();
 
 	return false;
 }
@@ -45,9 +47,8 @@ void Dense::populate(float* params, float* gradients){
 }
 
 void Dense::compute(float* input, float* output, float* inter_ptr, bool training){
-	if(inter_ptr == nullptr){
+	if(!inter_ptr || !activation)
 		inter_ptr = output;
-	}
 
 	// matrix multiply weights and input vector
 	vDSP_mmul(weights, 1, input, 1, inter_ptr, 1, output_shape.size(), 1, input_shape.size());
