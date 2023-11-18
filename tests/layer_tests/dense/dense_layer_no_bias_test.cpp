@@ -1,5 +1,5 @@
 #include "../layer_test.hpp"
-#include "Layers/conv2d.hpp"
+#include "Layers/dense.hpp"
 
 #include <iostream>
 
@@ -7,8 +7,7 @@
 #include "activation_func.hpp"
 
 int main(){
-	setup(new CPPML::Conv2d(3, 3, 5, CPPML::ELU, 1),
-				CPPML::Shape(20, 20, 3));
+	setup(new CPPML::Dense(25, CPPML::LINEAR, false), CPPML::Shape(30));
 
 	checkInputGradients();
 	checkParameterGradients();

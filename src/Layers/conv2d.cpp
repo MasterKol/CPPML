@@ -20,6 +20,12 @@ void Conv2d::init(int kw_, int kh_, int d_,
 	output_shape.d(d_);
 	input_shape = Shape(iw, ih, 0);
 	activation = activation_;
+	intermediate_num = 0;
+
+	filters = nullptr;
+	filter_grads = nullptr;
+	biases = nullptr;
+	bias_grads = nullptr;
 }
 
 bool Conv2d::compile_(){
@@ -53,8 +59,9 @@ bool Conv2d::compile_(){
 
 	filter_size = kw * kh * input_shape.d();
 	// there are 'depth' filters and one bias for each output
-	num_params = (filter_size + 1) * output_shape.d();
-	intermediate_num = output_shape.size();
+	num_params = filter_size * output_shape.d() + output_shape.d() * use_bias;
+	if(activation)
+		intermediate_num = output_shape.size();
 
 	// size of the padded input image
 	pw = input_shape.w() + padding * 2;
@@ -64,11 +71,14 @@ bool Conv2d::compile_(){
 }
 
 void Conv2d::populate(float* params, float* gradients){
-	filters = params + output_shape.d();
-	biases = params;
+	const int filter_offset = use_bias * output_shape.d();
+	filters = params + filter_offset;
+	filter_grads = gradients + filter_offset;
 
-	filter_grads = gradients + output_shape.d();
-	bias_grads = gradients;
+	if(use_bias){
+		biases = params;
+		bias_grads = gradients;
+	}
 
 	// apparently this is how you are supposed to
 	// initialize the filters in a conv2d layer
@@ -138,7 +148,7 @@ void Conv2d::compute(float* input, float* output, float* intermediate_buffer, bo
 	// fuction. if there is no intermediate buffer just write
 	// to output as intermediate
 	float* inter_s = intermediate_buffer;
-	if(inter_s == nullptr){
+	if(!inter_s || !activation){
 		inter_s = output;
 	}
 
@@ -152,10 +162,12 @@ void Conv2d::compute(float* input, float* output, float* intermediate_buffer, bo
 					1, inter_s, 1, output_size, 1, filter_size);
 		
 		// add bias
-		vDSP_vsadd(inter_s, 1, biases + d, inter_s, 1, output_size);
+		if(use_bias)
+			vDSP_vsadd(inter_s, 1, biases + d, inter_s, 1, output_size);
 
 		// perform activation on output
-		activation->f(inter_s, out_s, output_size);
+		if(activation)
+			activation->f(inter_s, out_s, output_size);
 
 		// add output_size to move to next 'slice'
 		inter_s += output_size;
@@ -220,12 +232,14 @@ void Conv2d::add_grads(float* input, float* out_change){
 		cur_filter_grads += filter_size;
 	}
 
-	const int owh = output_shape.w() * output_shape.h();
-	for(int i = 0; i < output_shape.d(); i++){
-		// total vector and write to bias grad
-		float t;
-		vDSP_sve(out_change + owh * i, 1, &t, owh);
-		bias_grads[i] += t;
+	if(use_bias){
+		const int owh = output_shape.w() * output_shape.h();
+		for(int i = 0; i < output_shape.d(); i++){
+			// total vector and write to bias grad
+			float t;
+			vDSP_sve(out_change + owh * i, 1, &t, owh);
+			bias_grads[i] += t;
+		}
 	}
 
 	delete[] t_filter_grads;
@@ -235,7 +249,8 @@ void Conv2d::add_grads(float* input, float* out_change){
 void Conv2d::get_change_grads(float* out_change, float* inpt_change,
 					float* input, float* output, float* intermediate){
 	// out_change <- activation'(intermediate) * out_change
-	activation->df(intermediate, out_change, output, out_change, output_shape.size());
+	if(activation)
+		activation->df(intermediate, out_change, output, out_change, output_shape.size());
 
 	const int pkw = kw - 1 - padding; // padding to add
 	const int pkh = kh - 1 - padding;

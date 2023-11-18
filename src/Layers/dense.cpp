@@ -19,10 +19,16 @@ bool Dense::compile_(){
 	input_shape = Shape(input_nodes);
 	
 	num_weights = input_shape.size() * output_shape.size();
-	num_biases = output_shape.size();
+	num_biases = output_shape.size() * use_bias;
 
 	num_params = num_weights + num_biases;
 
+	biases = nullptr;
+	bias_grads = nullptr;
+	weights = nullptr;
+	weight_grads = nullptr;
+
+	intermediate_num = 0;
 	if(activation) // intermediate only needed if there is an activation
 		intermediate_num = output_shape.size();
 
@@ -30,11 +36,15 @@ bool Dense::compile_(){
 }
 
 void Dense::populate(float* params, float* gradients){
-	weights = params + output_shape.size();
-	biases = params;
+	const int weight_offset = output_shape.size() * use_bias;
 
-	weight_grads = gradients + output_shape.size();
-	bias_grads = gradients;
+	weights = params + weight_offset;
+	weight_grads = gradients + weight_offset;
+
+	if(use_bias){
+		biases = params;
+		bias_grads = gradients;
+	}
 
 	// why set the weights between +-sqrt(6 / inputs) you may ask? I'm 
 	// not sure but the internet said to do it so thats what I did....
@@ -54,7 +64,8 @@ void Dense::compute(float* input, float* output, float* inter_ptr, bool training
 	vDSP_mmul(weights, 1, input, 1, inter_ptr, 1, output_shape.size(), 1, input_shape.size());
 	
 	// add biases
-	vDSP_vadd(inter_ptr, 1, biases, 1, inter_ptr, 1, output_shape.size());
+	if(use_bias)
+		vDSP_vadd(inter_ptr, 1, biases, 1, inter_ptr, 1, output_shape.size());
 
 	// apply activation function with intermediate as
 	// input and output as output to move data if necessary
@@ -82,7 +93,8 @@ void Dense::get_change_grads(float* out_change, float* inpt_change, float* input
 
 	// bias gradients: gradient of biases is just 1 * prev_change so just add prev_change to gradients
 	// bias grad += intermediate
-	vDSP_vadd(bias_grads, 1, out_change, 1, bias_grads, 1, output_shape.size());
+	if(use_bias)
+		vDSP_vadd(bias_grads, 1, out_change, 1, bias_grads, 1, output_shape.size());
 
 	//weight gradients: grad matrix = grad matrix + prev_change * transpose(last_in)
 	float* grad_row = weight_grads;

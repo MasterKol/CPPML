@@ -7,7 +7,7 @@
 #include "activation_func.hpp"
 
 int main(){
-	setup(new CPPML::Conv2d(3, 3, 5, CPPML::ELU, 1),
+	setup(new CPPML::Conv2d(3, 3, 5, 1, true),
 				CPPML::Shape(20, 20, 3));
 
 	checkInputGradients();

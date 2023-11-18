@@ -25,29 +25,53 @@ public:
 	float *filters, *biases;
 	float *filter_grads, *bias_grads;
 	const ActivationFunc* activation;
+	const bool use_bias;
 
 	/// @param kw width of the kernel
 	/// @param kh height of the kernel
 	/// @param d depth of output
-	/// @param activation_ activation to be applied to output
+	/// @param activation activation to be applied to output
 	/// @param padding amount of padding to add before convolving
 	/// @param iw width to cast input to 
 	/// @param ih height to cast input to
 	/// @param input_layers vararg, inputs to this layer
 	template<typename... Ts>
-	Conv2d(int kw, int kh, int d, const ActivationFunc* const activation_, int padding, int iw, int ih, Ts... input_layers) : Layer(input_layers...){
-		init(kw, kh, d, activation_, padding, iw, ih);
+	Conv2d(int kw, int kh, int d, const ActivationFunc* const activation, int padding, int iw, int ih, Ts... input_layers) : Layer(input_layers...), use_bias(true){
+		init(kw, kh, d, activation, padding, iw, ih);
 	}
 
 	/// @param kw width of the kernel
 	/// @param kh height of the kernel
 	/// @param d depth of output
-	/// @param activation_ activation to be applied to output
+	/// @param activation activation to be applied to output
 	/// @param padding amount of padding to add before convolving
 	/// @param input_layers vararg, inputs to this layer
 	template<typename... Ts>
-	Conv2d(int kw, int kh, int d, const ActivationFunc* const activation_, int padding, Ts... input_layers) : Layer(input_layers...){
-		init(kw, kh, d, activation_, padding, -1, -1);
+	Conv2d(int kw, int kh, int d, const ActivationFunc* const activation, int padding, Ts... input_layers) : Layer(input_layers...), use_bias(true){
+		init(kw, kh, d, activation, padding, -1, -1);
+	}
+
+	/// @param kw width of the kernel
+	/// @param kh height of the kernel
+	/// @param d depth of output
+	/// @param padding amount of padding to add before convolving
+	/// @param use_bias whether to add bias after convolution or not
+	/// @param input_layers vararg, inputs to this layer
+	template<typename... Ts>
+	Conv2d(int kw, int kh, int d, int padding, bool use_bias, Ts... input_layers) : Layer(input_layers...), use_bias(use_bias){
+		init(kw, kh, d, nullptr, padding, -1, -1);
+	}
+
+	/// @param kw width of the kernel
+	/// @param kh height of the kernel
+	/// @param d depth of output
+	/// @param activation activation to be applied to output
+	/// @param padding amount of padding to add before convolving
+	/// @param use_bias whether to add bias after convolution or not
+	/// @param input_layers vararg, inputs to this layer
+	template<typename... Ts>
+	Conv2d(int kw, int kh, int d, const ActivationFunc* const activation, int padding, bool use_bias, Ts... input_layers) : Layer(input_layers...), use_bias(use_bias){
+		init(kw, kh, d, activation, padding, -1, -1);
 	}
 
 	virtual void populate(float* params, float* gradients);
