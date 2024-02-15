@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include <mutex>
 
 #include "../activation_func.hpp"
 #include "../random.hpp"
