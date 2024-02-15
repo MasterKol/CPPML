@@ -8,7 +8,8 @@
 namespace CPPML {
 
 void Layer::add_input(Layer* layer){
-	assert(layer != nullptr);
+	if(!layer)
+		return;
 	//inputs.push_back(layer->get_output());
 	inputs.push_back(layer);
 	
@@ -78,32 +79,31 @@ void Layer::collect_inputs(float* io_buffer, float* input){
 void Layer::process(float* io_buffer, float* intermediate_buffer, bool training){
 	float* output = io_buffer + output_index;
 	float* intermediate = nullptr;
-	float* input = nullptr;
 
 	if(intermediate_buffer != nullptr){
 		intermediate = intermediate_buffer + intermediate_index;
 	}
 
 	switch(inputs.size()){
-		case 1:
-			// only one input so just pull directly from the io buffer
-			input = io_buffer + inputs[0]->output_index;
 		case 0:
 			// input layers have 0 inputs, the default one
 			// does no computation but if someone extends
 			// it they might want to do something...
+			compute(nullptr, output, intermediate, training);
+			return;
+		case 1:
+			// only one input so just pull directly from the io buffer
+			float* input = io_buffer + inputs[0]->output_index;
 			compute(input, output, intermediate, training);
 			return;
 	}
 
 	// multiple inputs to copy to a temp buffer
-	input = new float[input_shape.size()];
+	std::unique_ptr<float[]> input ( new float[input_shape.size()] );
 	
-	collect_inputs(io_buffer, input);
+	collect_inputs(io_buffer, input.get());
 
-	compute(input, output, intermediate, training);
-
-	delete[] input;
+	compute(input.get(), output, intermediate, training);
 }
 
 void Layer::backpropagate(float* change_buffer, float* io_buffer, float* intermediate_buffer){
