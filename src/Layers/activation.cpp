@@ -4,13 +4,18 @@
 namespace CPPML {
 
 bool ActivationLayer::compile_(){
-	int len = 0;
-	for(Layer* l : inputs){
-		len += l->output_shape.size();
+	if(inputs.size() == 1){
+		input_shape = inputs[0]->output_shape;
+		output_shape = input_shape;
+	}else{
+		int len = 0;
+		for(Layer* l : inputs){
+			len += l->output_shape.size();
+		}
+		
+		input_shape = Shape(len);
+		output_shape = Shape(len);
 	}
-	
-	input_shape = Shape(len);
-	output_shape = Shape(len);
 	intermediate_num = 0;
 	return false;
 }
