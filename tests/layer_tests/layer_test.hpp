@@ -33,7 +33,7 @@ void checkInputGradients(){
 		float err = std::abs((calc - input_change[i]) / calc);
 		avg += err;
 
-		if(err > epsilon) std::cerr << i << ", " << err << ", " << calc << ", " << input_change[i] << "\n";
+		/*if(err > epsilon) */std::cerr << i << ", " << err << ", " << calc << ", " << input_change[i] << ", " << input[i] << ", " << output[i] << "\n";
 	}
 	avg /= input_length;
 
@@ -52,8 +52,10 @@ void checkParameterGradients(){
 	float avg = 0;
 	for(int i = 0; i < net->num_params; i++){
 		float calc = getDerv(net->params + i);
-		if(calc == 0)
+		if(calc == 0){
+			std::cerr << i << ", --, " << calc << ", " << gradients[i] << "\n";
 			continue;
+		}
 		float err = std::abs((calc - gradients[i]) / calc);
 		avg += err;
 
@@ -117,7 +119,7 @@ void retest(){
 /// @param input_shape shape of input to the network (and the given layer)
 /// @param seed seed for random number generator (random if 0)
 void setup(CPPML::Layer* layer, CPPML::Shape input_shape, int seed = 0){
-	net = new CPPML::Network(CPPML::MAE);
+	net = new CPPML::Network(CPPML::HUBER);
 
 	CPPML::Layer* l = new CPPML::Input(input_shape, net);
 	layer->add_input(l);
@@ -149,7 +151,7 @@ void setup(int seed = 0){
 	output = new float[output_length];
 
 	// fill input with random values
-	CPPML::Random::fillGaussian(input, input_length, 0, 1);
+	CPPML::Random::fillGaussian(input, input_length, 5, 2);
 	if(set_input)
 		set_input(input);
 

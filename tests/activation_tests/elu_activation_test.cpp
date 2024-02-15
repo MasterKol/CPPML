@@ -49,6 +49,7 @@ int main(){
 		}
 	}
 
+	memcpy(out_buff.get(), out.get(), SIZE * sizeof(float));
 	/*** test function derivative ***/
 	CPPML::ELU->df(in.get(), out.get(), out_buff.get(), grad.get(), SIZE);
 	
