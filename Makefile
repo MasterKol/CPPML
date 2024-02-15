@@ -16,6 +16,7 @@ cross_attention.o \
 image_flatten.o \
 dropout.o \
 embedding.o \
+group_norm.o \
 input.o \
 adam.o \
 sgd.o \
