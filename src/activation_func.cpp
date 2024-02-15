@@ -28,19 +28,47 @@ void linear_df(const float* input, float* input_gradients, float* output, float*
 
 /**************** ELU ****************/
 void elu_f(const float* input, float* output, int length){
-	float* t = new float[length];
-	vDSP_vnabs(input, 1, t, 1, length); // t <- -abs(in)
-	vvexpm1f(t, t, &length); // t <- e^t - 1
-	vDSP_vmax(t, 1, input, 1, output, 1, length); // out <- max(t, in)
-	delete[] t;
+	// float* t = new float[length];
+	// vDSP_vnabs(input, 1, t, 1, length); // t <- -abs(in)
+	// vvexpm1f(t, t, &length); // t <- e^t - 1
+	// vDSP_vmax(t, 1, input, 1, output, 1, length); // out <- max(t, in)
+	// delete[] t;
+
+	/*const int l = 32;
+	float v[l];
+
+	const int over = length % l;
+	vDSP_vnabs(input, 1, v, 1, over); // t <- -abs(in)
+	vvexpm1f(v, v, &over); // t <- e^t - 1
+	vDSP_vmax(v, 1, input, 1, output, 1, over); // out <- max(t, in)
+
+	input  += over;
+	output += over;
+	
+	for(int i = 0; i < length; i += 32){
+		vDSP_vnabs(input + i, 1, v, 1, l); // t <- -abs(in)
+		vvexpm1f(v, v, &l); // t <- e^t - 1
+		vDSP_vmax(v, 1, input + i, 1, output + i, 1, l); // out <- max(t, in)
+	}*/
+	for(int i = 0; i < length; i++){
+		float t = std::expm1f(input[i]);
+		output[i] = input[i] > 0 ? input[i] : t;
+	}
 }
 
 void elu_df(const float* input, float* input_gradients, float* output, float* output_gradients, int length){
+	// const float nInif = -__FLT_MAX__; // -infinity
+	// const float one = 1.0f; // one
+
+	// vvexpf(output, input, &length); // out <- e^in
+	// vDSP_vclip(output, 1, &nInif, &one, output, 1, length); // out <- min(out, 1)
+
 	const float nInif = -__FLT_MAX__; // -infinity
+	const float zero = 0.0f; // zero
 	const float one = 1.0f; // one
 
-	vvexpf(output, input, &length); // out <- e^in
-	vDSP_vclip(output, 1, &nInif, &one, output, 1, length); // out <- min(out, 1)
+	vDSP_vclip(output, 1, &nInif, &zero, output, 1, length); 	// out <- min(out, 0)
+	vDSP_vsadd(output, 1, &one, output, 1, length);				// out += 1
 
 	// in_grad = out_grad * Jacobian (out)
 	vDSP_vmul(output, 1, output_gradients, 1, input_gradients, 1, length);
