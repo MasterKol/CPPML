@@ -25,10 +25,8 @@ Adam::~Adam(){
 }
 
 void Adam::compile_(){
-	mt = new float[net->num_params];
-	memset(mt, 0, net->num_params * sizeof(float));
-	vt = new float[net->num_params];
-	memset(vt, 0, net->num_params * sizeof(float));
+	mt = new float[net->num_params]();
+	vt = new float[net->num_params]();
 }
 
 void Adam::update_params(){
@@ -68,6 +66,17 @@ void Adam::update_params(){
 
 	// params += grads
 	vDSP_vadd(grads, 1, params, 1, params, 1, num_params);
+}
+
+void Adam::reset(){
+	memset(mt, 0, net->num_params * sizeof(float));
+	memset(vt, 0, net->num_params * sizeof(float));
+
+	beta1 = 0.9f;
+	beta2 = 0.999f;
+	beta1_hat = 1;
+	beta2_hat = 1;
+	t = 0;
 }
 
 }

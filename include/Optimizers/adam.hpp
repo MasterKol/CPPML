@@ -19,7 +19,7 @@ private:
 	float* vt;
 	int t;
 	float learning_rate_falloff;
-public:	
+public:
 	/// @brief Adam optimizer, most params should be left at default unless you
 	///		   know what you are doing.
 	/// @param learning_rate 
@@ -30,6 +30,8 @@ public:
 			float beta2=0.999f, float epsilon=1E-7);
 	~Adam();
 	virtual void update_params();
+
+	void reset();
 private:
 	virtual void compile_();
 };
