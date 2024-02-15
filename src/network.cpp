@@ -53,15 +53,15 @@ void Network::add_input_layer(Input* input_layer){
 }
 
 void Network::set_params_to_ema(){
-	if(!ema_params || params_ema)
-		return
+	if((!ema_params) || params_ema)
+		return;
 	vDSP_vswap(params, 1, ema_params, 1, num_params);
 	params_ema = true;
 }
 
 void Network::set_params_to_norm(){
-	if(!ema_params || !params_ema)
-		return
+	if((!ema_params) || !params_ema)
+		return;
 	vDSP_vswap(params, 1, ema_params, 1, num_params);
 	params_ema = false;
 }
@@ -105,7 +105,8 @@ void Network::compile(Optimizer* optimizer_){
 	}
 
 	// allocate parameter array for use by all layers
-	params = new float[num_params]();
+	if(!params) // make it conditional to allow for weight sharing between networks
+		params = new float[num_params]();
 
 	// allocate ema array for use by all layers
 	if(ema_decay_rate != 0)
@@ -352,7 +353,10 @@ Network::Err Network::save(std::string file_name, bool save_ema){
 	return success;
 }
 
-Network::Err Network::load(std::string file_name){
+Network::Err Network::load(std::string file_name, bool load_only_ema){
+	if(load_only_ema && !ema_params)
+		return Err::wrong_param_num;
+	
 	// open file as output, binary, and delete original content
 	std::ifstream file (file_name, std::ios::in|std::ios::binary);
 	if (!file.is_open())
@@ -370,17 +374,21 @@ Network::Err Network::load(std::string file_name){
 
 	// tell compiler to read params as uint instead of float
 	uint* u_params = (uint*)params;
+	// load into ema_params if load ema is true
+	if(load_only_ema)
+		u_params = (uint*)ema_params;
 
-	// loop over params
+	// load params from file
+	file.read((char*)(u_params), sizeof(float) * t);
+
+	// convert from big endian to local endian
 	for(int i = 0; i < num_params; i++){
-		// read and convert from big endian to local endian
-		file.read((char*)(&t), 4);
-		u_params[i] = ntohl(t);
+		u_params[i] = ntohl(u_params[i]);
 	}
 
 	file.close();
 
-	if(ema_params)
+	if(!load_only_ema && ema_params)
 		memcpy(ema_params, params, num_params * sizeof(float));
 
 	return success;
@@ -500,19 +508,20 @@ void Network::print_summary(){
 	std::cout << "Model: " << net_name << std::endl;
 	std::cout << std::string(terminal_width, '-') << std::endl;
 
-	const int num_columns = 5;
+	const int num_columns = 6;
 
-	std::string column_headers[] = {"Num", "Layer (type)", "Output Shape", "Param #", "Inputs"};
+	std::string column_headers[] = {"Num", "Layer (type)", "Input Shape", "Output Shape", "Param #", "Inputs"};
 	// layer_names, output_shapes, param_nums, inputs
-	std::vector<std::string> columns[num_columns]; 
+	std::vector<std::string> columns[num_columns];
 
 	int c = 0;
 	for(Layer* l : layers){
 		columns[0].push_back(std::to_string(c++));
 		columns[1].push_back(get_formatted_name(l));
-		columns[2].push_back(l->output_shape.to_string());
-		columns[3].push_back(std::to_string(l->num_params));
-		columns[4].push_back(get_layer_input_string(l, layers));
+		columns[2].push_back(l->input_shape.to_string());
+		columns[3].push_back(l->output_shape.to_string());
+		columns[4].push_back(std::to_string(l->num_params));
+		columns[5].push_back(get_layer_input_string(l, layers));
 	}
 
 	int column_sizes[num_columns];

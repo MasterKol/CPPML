@@ -173,8 +173,9 @@ public:
 
 	/// @brief Loads model weights from designated file
 	/// @param file_name path to file to read from
+	/// @param load_only_ema if false, loads into normal and ema params, if true loads only ema_params
 	/// @return Returns error code if failure
-	Err load(std::string file_name);
+	Err load(std::string file_name, bool load_only_ema=false);
 private:
 	// This runs basically dfs topological sort on the nodes
 	// in the network so that each one will only rely on
