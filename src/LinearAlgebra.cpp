@@ -377,6 +377,42 @@ void vDSP_vswap(float *A, int AStride, float *B, int BStride, int length){
 	}
 }
 
+void vDSP_normalize(const float *A, int AStride, float *C, int CStride, float *Mean, float *StandardDeviation, int N){
+	*Mean = 0;
+	
+	const float* At = A;
+	for(int i = 0; i < N; i++){
+		*Mean += *At;
+		At += AStride;
+	}
+	*Mean /= N;
+
+	*StandardDeviation = 0;
+	if(C == NULL){
+		At = A;
+		for(int i = 0; i < N; i++){
+			float t = A[i] - *Mean;
+			*StandardDeviation += t * t;
+			A += AStride;
+		}
+		*StandardDeviation = std::sqrt(*StandardDeviation / (float)N);
+	}else{
+		float* Ct = C;
+		for(int i = 0; i < N; i++){
+			*Ct -= *Mean;
+			*StandardDeviation += (*Ct) * (*Ct);
+			Ct += AStride;
+		}
+		*StandardDeviation = std::sqrt(*StandardDeviation / (float)N);
+		const float inv_stdev = 1.0f / *StandardDeviation;
+		Ct = C;
+		for(int i = 0; i < N; i++){
+			*Ct *= inv_stdev;
+			Ct += AStride;
+		}
+	}
+}
+
 } // namespace CPPML
 
 #endif

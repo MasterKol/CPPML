@@ -49,11 +49,12 @@
 // vDSP_vmsb		(const float *__A, vDSP_Stride __IA, const float *__B, vDSP_Stride __IB, const float *__C, vDSP_Stride __IC, float *__D, vDSP_Stride __ID, vDSP_Length __N);
 // vDSP_vma			(const float *__A, vDSP_Stride __IA, const float *__B, vDSP_Stride __IB, const float *__C, vDSP_Stride __IC, float *__D, vDSP_Stride __ID, vDSP_Length __N);
 // vDSP_vmmsb		(const float *__A, vDSP_Stride __IA, const float *__B, vDSP_Stride __IB, const float *__C, vDSP_Stride __IC, const float *__D, vDSP_Stride __ID, float *__E, vDSP_Stride __IE, vDSP_Length __N);
+// vDSP_normalize	(const float *__A, vDSP_Stride __IA, float *__C, vDSP_Stride __IC, float *__Mean, float *__StandardDeviation, vDSP_Length __N);
 
-//#define USE_LINEAR_ALGEBRA_FUNCS
+// #define USE_LINEAR_ALGEBRA_FUNCS
 
 // Has the accelerate framework (OSX only I think)
-#if defined(USE_LINEAR_ALGEBRA_FUNCS) || (defined(__has_include) && __has_include(<Accelerate/Accelerate.h>))
+#if !defined(USE_LINEAR_ALGEBRA_FUNCS) && (defined(__has_include) && __has_include(<Accelerate/Accelerate.h>))
  	#include <Accelerate/Accelerate.h>
 #else
 	#define USE_LINEAR_ALGEBRA_FUNCS
@@ -136,6 +137,8 @@
 	void vvtanhf(float *output, const float *input, const int *length);
 	// swaps contents of arrays A and B
 	void vDSP_vswap(float *A, int AStride, float *B, int BStride, int length);
+	// calculates the mean and standard deviation of an array, optionally normalizes it
+	void vDSP_normalize(const float *A, int AStride, float *C, int CStride, float *Mean, float *StandardDeviation, int N);
 
 	} // namespace CPPML
 #endif
