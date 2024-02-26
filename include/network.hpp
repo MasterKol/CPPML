@@ -123,6 +123,18 @@ public:
 	/// @param lio *optional* memory where network intermediates are stored (size=last_io_size)
 	void eval(float* input, float* output, float* lio=nullptr);
 
+	/// @brief gets the loss between the predicted and target values for a given input
+	/// @param input input to the model
+	/// @param target target output for the model
+	/// @return loss
+	float get_loss(float* input, float* target);
+
+	/// @brief gets the loss between array of predicted and target values for given inputs
+	/// @param input inputs to the model
+	/// @param target target outputs for the model
+	/// @return average loss across inputs
+	float get_loss(float* inputs, float* targets, int num);
+
 	// moves ema parameters to params
 	// if no ema, then nothing is done
 	void set_params_to_ema();

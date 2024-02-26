@@ -326,6 +326,25 @@ void Network::apply_gradients(){
 	}
 }
 
+float Network::get_loss(float* input, float* target){
+	std::unique_ptr<float[]> output(new float[output_length]);
+	eval(input, output.get());
+	return cost_func->get_cost(output.get(), target, output_length);
+}
+
+float Network::get_loss(float* inputs, float* targets, int num){
+	std::unique_ptr<float[]> output(new float[output_length]);
+	float out = 0;
+	for(int i = 0; i < num; i++){
+		eval(inputs, output.get());
+		out += cost_func->get_cost(output.get(), targets, output_length);
+
+		inputs += input_length;
+		targets += output_length;
+	}
+	return out / num;
+}
+
 Network::Err Network::save(std::string file_name, bool save_ema){
 	// open file as output, binary, and delete original content
 	std::ofstream file (file_name, std::ios::out|std::ios::binary|std::ios::trunc);
